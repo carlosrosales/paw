@@ -1,0 +1,83 @@
+#!/bin/sh
+# Build flags for PAW
+# Change CC, MPICC and the corresponding flags to match your own compiler.
+# v1.0 (2014-08-27)  Carlos Rosales Fernandez
+#------------------------------------------------------------------------------
+# Copyright 2014 Carlos Rosales Fernandez and The University of Texas at Austin
+#
+# This file is part of the Performance Assessment Workbench (PAW).
+# PAW is free software: you can redistribute it and/or modify it under the
+# terms of the GNU GPL version 2 or (at your option) any later version.
+#
+# PAW is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+# A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# PAW, in the file COPYING.txt. If not, see <http://www.gnu.org/licenses/>.
+#------------------------------------------------------------------------------
+
+
+# Uncomment this to add a suffix to each binary (BLAS and MPI tests only)
+# This is useful for multiple builds on different architectures (cpu/mic)
+# export BIN_SUFFIX=.cpu
+
+# Installation directory
+export INSTALL_DIR=../../bin
+
+# Intel Compiler
+# ---------------
+export CC=icc
+export MPICC=mpicc
+export CFLAGS=-c -O3 -I../aux
+export LFLAGS=   -O3 -lrt
+export ARCH_FLAGS=-xHOST
+export OMP_FLAGS=-openmp
+
+# GNU gfortran
+#-------------
+#export CC=gcc
+#export MPICC=mpicc
+#export CFLAGS=-c -O3 -I../aux
+#export LFLAGS=-O3 -lrt
+#export ARCH_FLAGS=-march=native
+#export OMP_FLAGS=-fopenmp
+
+# BLAS Setup For Intel MKL
+#-----------------------------------------------------------
+export MKL_INC = $(MKLROOT)/include
+export MKL_LIB = $(MKLROOT)/lib/intel64
+export BLAS_CFLAGS = -I$(MKL_INC) -DMKL
+export BLAS_LFLAGS = -Wl,--start-group $(MKL_LIB)/libmkl_intel_lp64.a $(MKL_LIB)/libmkl_intel_thread.a $(MKL_LIB)/libmkl_core.a -Wl,--end-group -L$(MKLROOT)/../compiler/lib/intel64 -liomp5 -lpthread -lm
+
+# Uncomment this for OpenBlas
+# Change the include and lib locations to match your system
+#-----------------------------------------------------------
+#export OPENBLAS_INC=/opt/OpenBLAS/include
+#export OPENBLAS_LIB=/opt/OpenBLAS/lib
+#export BLAS_CFLAGS = -I$(OPENBLAS_INC) -DOPENBLAS
+#export BLAS_LFLAGS = -Wl,-rpath,$(OPENBLAS_LIB) -L$(OPENBLAS_LIB) -lopenblas 
+
+# Uncomment this for Atlas
+# Change the include and lib locations to match your system
+#-----------------------------------------------------------
+#export ATLAS_INC=/usr/local/atlas/include
+#export ATLAS_LIB=/usr/local/atlas/lib
+#export BLAS_CFLAGS = -I$(ATLAS_INC) -DATLAS
+#export BLAS_LFLAGS = -Wl,-rpath,$(ATLAS_LIB) -L$(ATLAS_LIB) -lm -lpthread -lptcblas -latlas
+
+# CUDA setup info for GPU specific tests
+#-----------------------------------------------------------
+export NVCC = nvcc
+export CUDA_INC=/opt/apps/cuda/5.0/include/
+export CUDA_LIB=/opt/apps/cuda/5.0/lib64/
+export CUDA_CFLAGS      = -I$(CUDA_INC)
+export CUDA_LFLAGS      = -Wl,--rpath,$(CUDA_LIB) -L$(CUDA_LIB) -lcudart
+export CUDA_LFLAGS_BLAS = $(CUDA_LFLAGS) -lcublas
+
+# Offload setup info for Xeon Phi specific tests
+#-----------------------------------------------------------
+PHI_CFLAGS = -offload-option,mic,compiler,"-O3"
+PHI_LFLAGS = -offload-option,mic,ld,"-O3"
+
+

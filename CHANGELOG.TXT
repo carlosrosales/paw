@@ -1,0 +1,5 @@
+v1.0 - 2014/08/27
+=================
+* First Public Release
+
+2014-08-27 \ Carlos Rosales Fernandez \ carlos.rosales.fernandez@gmail.com
