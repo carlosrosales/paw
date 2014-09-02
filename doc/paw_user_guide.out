@@ -1,0 +1,23 @@
+\BOOKMARK [0][-]{chapter.1}{Installation}{}% 1
+\BOOKMARK [0][-]{chapter.2}{General Design}{}% 2
+\BOOKMARK [0][-]{chapter.3}{Floating Point Performance}{}% 3
+\BOOKMARK [0][-]{chapter.4}{MPI Latency}{}% 4
+\BOOKMARK [0][-]{chapter.5}{MPI Bandwidth}{}% 5
+\BOOKMARK [1][-]{section.5.1}{Collectives}{chapter.5}% 6
+\BOOKMARK [1][-]{section.5.2}{Point to point}{chapter.5}% 7
+\BOOKMARK [2][-]{subsection.5.2.1}{p2p\137get}{section.5.2}% 8
+\BOOKMARK [2][-]{subsection.5.2.2}{p2p\137isend}{section.5.2}% 9
+\BOOKMARK [2][-]{subsection.5.2.3}{p2p\137put}{section.5.2}% 10
+\BOOKMARK [2][-]{subsection.5.2.4}{p2p\137send}{section.5.2}% 11
+\BOOKMARK [1][-]{section.5.3}{Specialized}{chapter.5}% 12
+\BOOKMARK [2][-]{subsection.5.3.1}{p2p\137isend\137bidir}{section.5.3}% 13
+\BOOKMARK [2][-]{subsection.5.3.2}{p2p\137isend\137ping}{section.5.3}% 14
+\BOOKMARK [2][-]{subsection.5.3.3}{p2p\137mrate}{section.5.3}% 15
+\BOOKMARK [2][-]{subsection.5.3.4}{p2p\137mrate\137bidir}{section.5.3}% 16
+\BOOKMARK [0][-]{chapter.6}{GPU}{}% 17
+\BOOKMARK [1][-]{section.6.1}{Floating Point Performance}{chapter.6}% 18
+\BOOKMARK [1][-]{section.6.2}{Data Transfer Rates}{chapter.6}% 19
+\BOOKMARK [0][-]{chapter.7}{Xeon Phi}{}% 20
+\BOOKMARK [1][-]{section.7.1}{Data Transfer Rates}{chapter.7}% 21
+\BOOKMARK [2][-]{subsection.7.1.1}{Dual Phi Systems}{section.7.1}% 22
+\BOOKMARK [1][-]{subsection.7.1.1}{References}{chapter.7}% 23
