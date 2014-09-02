@@ -1,13 +1,13 @@
 === PAW v1.0 ===
 
 The Performance Assessment Workbench (PAW) is a suite of simple codes designed 
-to test baseline performance in high performacne computing systems.
+to test baseline performance in high performance computing systems.
 
 PAW provides codes to test floating point performance usign BLAS routines, MPI 
 performance of both point to point and collective operations, and also specific 
 codes to test NVIDIA GPU and Intel Xeon Phi coprocessor performance.
 
-There are some areas of performance where excellent benchmarks already exists, 
+There are some areas of performance where excellent benchmarks already exist, 
 and this project aims to complement those rather than substitute them. Examples 
 of recommended benchmarks that complement PAW well are:
 
