@@ -73,7 +73,9 @@ int main(int argc, char **argv)
     // Initialize local variables
     localMax = 0.0;
     dblSize  = sizeof(double);
-    partner  = 1 - proc;
+    npairs   = nprocs/2;
+    if( proc < npairs  ) partner = proc + npairs;
+    if( proc >= npairs ) partner = proc - npairs;
     UsedMem = (double)smax*(double)dblSize*2.0;
 
     // Allocate and initialize arrays
@@ -98,7 +100,7 @@ int main(int argc, char **argv)
     // is long enough for the timings to be accurate                     
     //================================================================
     // Warmup with a medium size message
-    if( proc == 0 ){
+    if( proc < npairs ){
         MPI_Isend( A, smed, MPI_DOUBLE, partner, tag, MPI_COMM_WORLD, &req1 );
         MPI_Wait( &req1, &stat1 );
     }else{
@@ -108,7 +110,7 @@ int main(int argc, char **argv)
     // Test if current NLOOP is enough to capture fastest test cases
     MPI_Barrier( MPI_COMM_WORLD );
     tStart = benchTimer();
-    if( proc == 0 ){
+    if( proc < npairs ){
         for(j = 0; j < NLOOP; j++){
             MPI_Isend( A, smin, MPI_DOUBLE, partner, tag, MPI_COMM_WORLD, &req1 );
             MPI_Wait( &req1, &stat1 );
@@ -131,7 +133,7 @@ int main(int argc, char **argv)
     for( size = smin; size <= smax; size = size*2 ){
 
         // Warmup with a medium size message
-        if( proc == 0 ){
+        if( proc < npairs ){
             MPI_Isend( A, smed, MPI_DOUBLE, partner, tag, MPI_COMM_WORLD, &req1 );
             MPI_Wait( &req1, &stat1 );
         }else{
@@ -143,7 +145,7 @@ int main(int argc, char **argv)
         for(i = 0; i < NREPS; i++){
             MPI_Barrier( MPI_COMM_WORLD );
             tStart = benchTimer();
-            if( proc == 0 ){
+            if( proc < npairs ){
                 for(j = 0; j < NLOOP; j++){
         	        MPI_Isend( A, size, MPI_DOUBLE, partner, tag, MPI_COMM_WORLD, &req1 );
                     MPI_Wait( &req1, &stat1 );
