@@ -1,6 +1,6 @@
 /*==============================================================================
  * Program  : p2p_isend_ping
- * Revision : 1.0 (2014-08-27)
+ * Revision : 1.1 (2014-09-08)
  * Author   : Carlos Rosales Fernandez [carlos.rosales.fernandez(at)gmail.com]
  *==============================================================================
  * Copyright 2014 Carlos Rosales Fernandez and The University of Texas at Austin
@@ -36,7 +36,7 @@
 int main(int argc, char **argv)
 {
     FILE   *fp, *fp2;
-    char   testName[32] = "MPI_Isend", file1[64], file2[64];
+    char   testName[32] = "MPI_Ping", file1[64], file2[64];
     int    dblSize, proc, nprocs, npairs, partner, tag = 0;
     unsigned int i, j, size, localSize, NLOOP = NLOOP_MAX;
     unsigned int smin = MIN_P2P_SIZE, smed = MED_P2P_SIZE, smax = MAX_P2P_SIZE;
@@ -73,7 +73,9 @@ int main(int argc, char **argv)
     // Initialize local variables
     localMax = 0.0;
     dblSize  = sizeof(double);
-    partner  = 1 - proc;
+    npairs   = nprocs/2;
+    if( proc < npairs  ) partner = proc + npairs;
+    if( proc >= npairs ) partner = proc - npairs;
     UsedMem = (double)smax*(double)dblSize*2.0;
 
     // Allocate and initialize arrays
@@ -86,8 +88,8 @@ int main(int argc, char **argv)
         // Check timer overhead in seconds
         timerTest( &overhead, &threshold_lo, &threshold_hi );
         // Open output files and write headers
-        sprintf( file1, "isend_ping_time-np_%.4d.dat", nprocs );
-        sprintf( file2, "isend_ping_bw-np_%.4d.dat",   nprocs );
+        sprintf( file1, "ping_time-np_%.4d.dat", nprocs );
+        sprintf( file2, "ping_bw-np_%.4d.dat",   nprocs );
         fp  = fopen( file1, "a" );
         fp2 = fopen( file2, "a" );
         printHeaders( fp, fp2, testName, UsedMem, overhead, threshold_lo );
@@ -98,32 +100,24 @@ int main(int argc, char **argv)
     // is long enough for the timings to be accurate                     
     //================================================================
     // Warmup with a medium size message
-    if( proc == 0 ){
+    if( proc < npairs ){
         MPI_Isend( A, smed, MPI_DOUBLE, partner, tag, MPI_COMM_WORLD, &req1 );
         MPI_Wait( &req1, &stat1 );
-        MPI_Irecv( B, smed, MPI_DOUBLE, partner, tag, MPI_COMM_WORLD, &req1);
-        MPI_Wait( &req1, &stat1);
     }else{
         MPI_Irecv( B, smed, MPI_DOUBLE, partner, tag, MPI_COMM_WORLD, &req2);
         MPI_Wait( &req2, &stat2);
-        MPI_Isend( A, smed, MPI_DOUBLE, partner, tag, MPI_COMM_WORLD, &req2 );
-        MPI_Wait( &req2, &stat2 );
     }
     // Test if current NLOOP is enough to capture fastest test cases
     MPI_Barrier( MPI_COMM_WORLD );
     tStart = benchTimer();
-    if( proc == 0 ){
+    if( proc < npairs ){
         for(j = 0; j < NLOOP; j++){
             MPI_Isend( A, smin, MPI_DOUBLE, partner, tag, MPI_COMM_WORLD, &req1 );
-            MPI_Wait( &req1, &stat1 );
-            MPI_Irecv( B, 0, MPI_DOUBLE, partner, tag, MPI_COMM_WORLD, &req1);
             MPI_Wait( &req1, &stat1 );
         }
     }else{
         for(j = 0; j < NLOOP; j++){
             MPI_Irecv( B, smin, MPI_DOUBLE, partner, tag, MPI_COMM_WORLD, &req2);
-            MPI_Wait( &req2, &stat2 );
-            MPI_Isend( A, 0, MPI_DOUBLE, partner, tag, MPI_COMM_WORLD, &req2 );
             MPI_Wait( &req2, &stat2 );
         }
     }
@@ -139,35 +133,27 @@ int main(int argc, char **argv)
     for( size = smin; size <= smax; size = size*2 ){
 
         // Warmup with a medium size message
-        if( proc == 0 ){
+        if( proc < npairs ){
             MPI_Isend( A, smed, MPI_DOUBLE, partner, tag, MPI_COMM_WORLD, &req1 );
             MPI_Wait( &req1, &stat1 );
-            MPI_Irecv( B, 0, MPI_DOUBLE, partner, tag, MPI_COMM_WORLD, &req1);
-            MPI_Wait( &req1, &stat1);
         }else{
             MPI_Irecv( B, smed, MPI_DOUBLE, partner, tag, MPI_COMM_WORLD, &req2);
             MPI_Wait( &req2, &stat2);
-            MPI_Isend( A, 0, MPI_DOUBLE, partner, tag, MPI_COMM_WORLD, &req2 );
-            MPI_Wait( &req2, &stat2 );
         }
 
         // Repeat NREPS to collect statistics
         for(i = 0; i < NREPS; i++){
             MPI_Barrier( MPI_COMM_WORLD );
             tStart = benchTimer();
-            if( proc == 0 ){
+            if( proc < npairs ){
                 for(j = 0; j < NLOOP; j++){
         	        MPI_Isend( A, size, MPI_DOUBLE, partner, tag, MPI_COMM_WORLD, &req1 );
-                    MPI_Wait( &req1, &stat1 );
-        	        MPI_Irecv( B, 0, MPI_DOUBLE, partner, tag, MPI_COMM_WORLD, &req1 );
                     MPI_Wait( &req1, &stat1 );
                 }
             }
             else{
                 for(j = 0; j < NLOOP; j++){
         	        MPI_Irecv( B, size, MPI_DOUBLE, partner, tag, MPI_COMM_WORLD, &req2 );
-                    MPI_Wait( &req2, &stat2 );
-        	        MPI_Isend( A, 0, MPI_DOUBLE, partner, tag, MPI_COMM_WORLD, &req2 );
                     MPI_Wait( &req2, &stat2 );
                 }
             }
