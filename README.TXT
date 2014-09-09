@@ -41,9 +41,10 @@ is passed to Make in the installation step.
 
 === CHANGELOG ===
 
+Revision 1.0: (2014-09-08) Bugfix - corrected error in p2p_isend_ping.c
 Revision 1.0: (2014-08-27) First public release of PAW
 
-2014-08-27 \ Carlos Rosales Fernandez \ carlos.rosales.fernandez@gmail.com
+2014-09-08 \ Carlos Rosales Fernandez \ carlos.rosales.fernandez@gmail.com
 
 
 

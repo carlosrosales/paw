@@ -73,7 +73,7 @@
 \verb+ +
 \vspace{1em}
 \begin{flushright}
-\huge\bf PAW v1.0\\
+\huge\bf PAW v1.1\\
 \rule{\textwidth}{4pt}
 \large{\bf Performance Assessment Workbench User Guide\\
 Document Revision 1.0\\
@@ -97,7 +97,7 @@ Copyright 2014 Carlos Rosales Fern\'andez and the University of Texas at Austin.
 \end{titlepage}
 
 \begin{abstract}
-The Performance Assessment Workbench (PAW) is an Open Source suite of microbenchmarks designed with simplicity and reliability in mind. This User Guide documents the implementation details and the general usage for all components of PAW. As of version 1.0 the suite contains code designed to test:
+The Performance Assessment Workbench (PAW) is an Open Source suite of microbenchmarks designed with simplicity and reliability in mind. This User Guide documents the implementation details and the general usage for all components of PAW. As of version 1.1 the suite contains code designed to test:
 
 \begin{itemize}
 \item BLAS floating point performance in CPUs, GPUs and Xeon Phi
@@ -115,6 +115,8 @@ Throughout the text we have used text boxes to highlight important information. 
 \IntroBox{ These gray boxes contain highlighted material for each section and chapter. }
 
 Our intention is to create a set of simple benchmark implementations that are transparent to use and understand. The hope is that users of this set of tools will actually look at the code implementation and understand exactly what is being measured, without having to peel off multiple layers of obfuscating code. We have made an effort to write simple, reliable, and thoroughly commented C code, but we are well aware that documentation is never perfect or complete. We welcome all feedback. Feedback that includes suggestions for improvement in the usability, reliability, and accuracy of these benchmarks is particularly welcome. 
+
+Version 1.1 is a bug fix release addressing issues in the MPI test \verb+p2p_isend_ping+.
 \end{abstract}
 
 \tableofcontents
