@@ -23,7 +23,7 @@
  *============================================================================*/
 
 // PAW version number
-#define version "1.0"
+#define version "1.2"
 
 // Some useful strings
 #define bar   "=================================\n"
@@ -33,7 +33,7 @@
 #define sbw   "#\n# SIZE(B)\t\tAVG(MB/s)\t\t\tMIN(MB/s)\t\t\tMAX(MB/s)\t\tstdDev(MB/s)\t\tNLOOP\tNREPS\n"
 #define smpi  "#\n# SIZE(B)\t\tAVG(us)\t\t\t\tMIN(us)\t\t\t\tMAX(us)\t\t\tstdDev(us)\t\t\tNLOOP\tNREPS\n"
 #define srate "#\n# SIZE(B)\t\tAVG(MIO/s)\t\t\tMIN(MIO/s)\t\t\tMAX(MIO/s)\t\tstdDev(MIO/s)\t\tNLOOP\tNREPS\n"
-#define sver  "# PAW - Performance Assessment Workbench v1.0\n#\n"
+#define sver  "# PAW - Performance Assessment Workbench v1.2\n#\n"
 #define sauth "# Carlos Rosales-Fernandez\n"
 #define smail "# carlos.rosales.fernandez@gmail.com\n"
 
