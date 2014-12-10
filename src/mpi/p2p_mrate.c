@@ -66,8 +66,6 @@ int main(int argc, char **argv)
         if( getenv( "MIN_P2P_SIZE" ) != NULL ) smin = atoi( getenv( "MIN_P2P_SIZE" ) );
         if( getenv( "MED_P2P_SIZE" ) != NULL ) smed = atoi( getenv( "MED_P2P_SIZE" ) );
         if( getenv( "MAX_P2P_SIZE" ) != NULL ) smax = atoi( getenv( "MAX_P2P_SIZE" ) );
-        if( atoi( getenv("WINDOW_SIZE") ) <= 0 ) 
-        	fatalError( "WINDOW_SIZE must be a positive integer." );
     }
     MPI_Bcast( &NLOOP, 1, MPI_UNSIGNED, 0, MPI_COMM_WORLD );
     MPI_Bcast( &smin,  1, MPI_UNSIGNED, 0, MPI_COMM_WORLD );
@@ -141,7 +139,6 @@ int main(int argc, char **argv)
     if( proc == 0 ) resetInnerLoop( timeMinGlobal, threshold_lo, &NLOOP );
     MPI_Bcast( &NLOOP, 1, MPI_INT, 0, MPI_COMM_WORLD );
 
-
     //================================================================
     // Execute test for each requested size                  
     //================================================================
@@ -181,6 +178,7 @@ int main(int argc, char **argv)
             tElapsed[i] = benchTimer() - tStart;
         } 
         MPI_Reduce( tElapsed, tElapsedGlobal, NREPS, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+
         // Only task 0 needs to do the analysis of the collected data
         if( proc == 0 ){
             // sizeBytes is size of the message in bytes
