@@ -78,9 +78,8 @@ int main(int argc, char **argv)
         printHeaders( fp, fp2, testName, UsedMem, overhead, threshold_lo );
     }
 
-    // Set up pair groups for exchange
+    // Get type size
     MPI_Type_size( MPI_DOUBLE, &dblSize );
-
     // Set up a win for RMA
     MPI_Win_create( A, smax*dblSize, dblSize, MPI_INFO_NULL, MPI_COMM_WORLD, &win );
 
