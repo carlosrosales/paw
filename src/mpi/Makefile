@@ -67,8 +67,10 @@ col_gather.o     : $(SRCS) col_gather.c;     $(MPICC) $(CFLAGS) col_gather.c
 col_reduce.o     : $(SRCS) col_reduce.c;     $(MPICC) $(CFLAGS) col_reduce.c
 col_scatter.o    : $(SRCS) col_scatter.c;    $(MPICC) $(CFLAGS) col_scatter.c
 p2p_get.o        : $(SRCS) p2p_get.c;        $(MPICC) $(CFLAGS) p2p_get.c
+p2p_get_fence.o  : $(SRCS) p2p_get_fence.c;  $(MPICC) $(CFLAGS) p2p_get_fence.c
 p2p_isend.o      : $(SRCS) p2p_isend.c;      $(MPICC) $(CFLAGS) p2p_isend.c
 p2p_put.o        : $(SRCS) p2p_put.c;        $(MPICC) $(CFLAGS) p2p_put.c
+p2p_put_fence.o  : $(SRCS) p2p_put_fence.c;  $(MPICC) $(CFLAGS) p2p_put_fence.c
 p2p_send.o       : $(SRCS) p2p_send.c;       $(MPICC) $(CFLAGS) p2p_send.c
 p2p_mrate.o      : $(SRCS) p2p_mrate.c;      $(MPICC) $(CFLAGS) p2p_mrate.c
 p2p_mrate_bidir.o : $(SRCS) p2p_mrate_bidir.c; $(MPICC) $(CFLAGS) p2p_mrate_bidir.c
