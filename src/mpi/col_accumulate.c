@@ -36,8 +36,9 @@ int main(int argc, char **argv)
     FILE    *fp, *fp2;
     char    testName[32] = "MPI_Accumulate", file1[64], file2[64];
     int     dblSize, proc, nprocs;
-    unsigned int i, j, k, size, localSize, origin, target, NLOOP = NLOOP_MAX;
+    unsigned int i, j, k, size, localSize, target, NLOOP = NLOOP_MAX;
     unsigned int smin = MIN_COL_SIZE, smed = MED_COL_SIZE, smax = MAX_COL_SIZE;
+    unsigned int *origin;
     double  tScale = USEC, bwScale = MB;
     double  tStart, timeMin, timeMinGlobal, overhead, threshold_lo, threshold_hi;
     double  msgBytes, sizeBytes, localMax, UsedMem;
@@ -67,6 +68,7 @@ int main(int argc, char **argv)
     srand( SEED );
     A = doubleVector( smax );
     B = doubleVector( smax );
+    origin = (unsigned int *)malloc( (nprocs-1)*sizeof(unsigned int) );
 
     // Open output file and write header
     if( proc == 0 ){
@@ -84,8 +86,8 @@ int main(int argc, char **argv)
     MPI_Type_size( MPI_DOUBLE, &dblSize );
     // Origin group consists of all tasks except task 0
     if( proc == 0 ){
-      for( origin = 1; origin < nprocs; origin++ )
-        MPI_Group_incl( all_task_group, 1, &origin, &group );
+      for( i = 0; i < nprocs-1; i++ ) origin[i] = i+1;
+        MPI_Group_incl( all_task_group, 1, origin, &group );
     }
     // Target group consists of task 0 only
     else{
