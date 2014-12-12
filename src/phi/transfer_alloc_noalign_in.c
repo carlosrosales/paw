@@ -53,10 +53,7 @@ int main(int argc, char **argv)
     if( micNum == 0 ) fatalError( "No Xeon Phi devices found. Test Aborted." );
 
     // Check for user defined limits
-    if( getenv( "NLOOP_PHI_MAX" ) != NULL ) NLOOP = atoi( getenv( "NLOOP_PHI_MAX" ) );
-    if( getenv( "MIN_PHI_SIZE" ) != NULL ) smin = atoi( getenv( "MIN_PHI_SIZE" ) );
-    if( getenv( "MED_PHI_SIZE" ) != NULL ) smed = atoi( getenv( "MED_PHI_SIZE" ) );
-    if( getenv( "MAX_PHI_SIZE" ) != NULL ) smax = atoi( getenv( "MAX_PHI_SIZE" ) );
+    checkEnvPHI( &NLOOP, &smin, &smed, &smax );
     if( micNum == 1 ) UsedMem = (double)smax*sizeof(double);
     if( micNum == 2 ) UsedMem = (double)smax*2.0*sizeof(double);
 

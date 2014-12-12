@@ -31,6 +31,7 @@
 #include <unistd.h>
 #include <mpi.h>
 #include "aux.h"
+#include "aux_mpi.h"
 #include "constants.h"
 
 int main(int argc, char **argv)
@@ -59,16 +60,7 @@ int main(int argc, char **argv)
         fatalError( "P2P test requires an even number of processors" );
 
     // Check for user defined limits
-    if( proc == 0 ){
-        if( getenv( "NLOOP_MAX" ) != NULL ) NLOOP = atoi( getenv( "NLOOP_MAX" ) );
-        if( getenv( "MIN_P2P_SIZE" ) != NULL ) smin = atoi( getenv( "MIN_P2P_SIZE" ) );
-        if( getenv( "MED_P2P_SIZE" ) != NULL ) smed = atoi( getenv( "MED_P2P_SIZE" ) );
-        if( getenv( "MAX_P2P_SIZE" ) != NULL ) smax = atoi( getenv( "MAX_P2P_SIZE" ) );
-    }
-    MPI_Bcast( &NLOOP, 1, MPI_UNSIGNED, 0, MPI_COMM_WORLD );
-    MPI_Bcast( &smin,  1, MPI_UNSIGNED, 0, MPI_COMM_WORLD );
-    MPI_Bcast( &smed,  1, MPI_UNSIGNED, 0, MPI_COMM_WORLD );
-    MPI_Bcast( &smax,  1, MPI_UNSIGNED, 0, MPI_COMM_WORLD );
+    checkEnvP2P( proc, &NLOOP, &smin, &smed, &smax );
 
     // Initialize local variables
     localMax = 0.0;

@@ -70,3 +70,15 @@ int timerTest( double *overhead, double *threshold_lo, double *threshold_hi );
 
 int threadCount( void );
 
+int checkEnvBLAS( unsigned int *NLOOP, unsigned int *smin, 
+                  unsigned int *smed, unsigned int *smax  );
+
+int checkEnvGPU( unsigned int *NLOOP, unsigned int *smin, 
+                 unsigned int *smed, unsigned int *smax  );
+
+int checkEnvGPUBLAS( unsigned int *NLOOP, unsigned int *smin, 
+                     unsigned int *smed, unsigned int *smax  );
+
+int checkEnvPHI( unsigned int *NLOOP, unsigned int *smin, 
+                  unsigned int *smed, unsigned int *smax  );
+

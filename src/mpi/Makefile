@@ -22,8 +22,8 @@ CFLAGS += $(ARCH_FLAGS)
 LFLAGS += $(ARCH_FLAGS)
 
 # Object files
-OBJS = aux.o
-SRCS = ../aux/aux.c ../aux/aux.h ../aux/constants.h
+OBJS = aux.o aux_mpi.o
+SRCS = ../aux/aux.c ../aux/aux.h ../aux/constants.h ../aux/aux_mpi.c ../aux/aux_mpi.h
 
 # Build options
 all: col_agtr col_a2a col_ardc col_bct col_gtr col_rdc col_sct \
@@ -51,6 +51,7 @@ p2p_isend_ping  : $(OBJS) p2p_isend_ping.o;  $(MPICC) $(LFLAGS) $(OBJS) p2p_isen
 
 # Compilation Stage
 aux.o            : $(SRCS);                  $(MPICC) $(CFLAGS) ../aux/aux.c
+aux_mpi.o        : $(SRCS);                  $(MPICC) $(CFLAGS) ../aux/aux_mpi.c
 latency.o        : $(SRCS) latency.c;        $(MPICC) $(CFLAGS) latency.c
 col_allgather.o  : $(SRCS) col_allgather.c;  $(MPICC) $(CFLAGS) col_allgather.c
 col_alltoall.o   : $(SRCS) col_alltoall.c;   $(MPICC) $(CFLAGS) col_alltoall.c
