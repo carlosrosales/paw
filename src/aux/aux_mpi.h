@@ -31,5 +31,5 @@ int checkEnvP2P( int proc, unsigned int *NLOOP, unsigned int *smin,
                   unsigned int *smed, unsigned int *smax  );
 
 
-int checkEnvP2P( int proc, unsigned int *windowSize, unsigned int *NLOOP, 
+int checkEnvMRT( int proc, unsigned int *windowSize, unsigned int *NLOOP, 
 	             unsigned int *smin, unsigned int *smed, unsigned int *smax  );
