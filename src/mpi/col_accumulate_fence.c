@@ -169,7 +169,6 @@ int main(int argc, char **argv)
     MPI_Barrier( MPI_COMM_WORLD );
     free( A );
     free( B );
-    MPI_Group_free( &group );
 
     //================================================================
     // Print completion message, free memory and exit                  
