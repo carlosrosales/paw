@@ -23,7 +23,7 @@ LFLAGS += $(ARCH_FLAGS)
 
 # Object files
 OBJS = aux.o aux_mpi.o
-SRCS = ../aux/aux.c ../aux/aux.h ../aux/constants.h ../aux/aux_mpi.c ../aux/aux_mpi.h
+SRCS = ../../aux/aux.c ../../aux/aux.h ../../aux/constants.h ../../aux/aux_mpi.c ../../aux/aux_mpi.h
 
 # Build options
 all: col_racc p2p_rget p2p_rput
