@@ -39,8 +39,8 @@ int main( int argc, char **argv )
     FILE   *fp, *fp2;
     char   testName[32] = "GPU_TRANSFER_IN_PINNED";
     int    i, j, deviceID, gpuNum;
-    unsigned int size, localSize, NLOOP = NLOOP_MAX, MED_SIZE = MED_GPU_SIZE;
-    unsigned int MIN_SIZE = MIN_GPU_SIZE, MAX_SIZE = MAX_GPU_SIZE;
+    unsigned int size, localSize, NLOOP = NLOOP_MAX, smed = MED_GPU_SIZE;
+    unsigned int smin = MIN_GPU_SIZE, smax = MAX_GPU_SIZE;
     float  *A, *A_d;
     double tScale = USEC, bwScale = MB;
     double timeMin, tStart, overhead, threshold_lo, threshold_hi, invRND;
@@ -53,11 +53,8 @@ int main( int argc, char **argv )
         fatalError( "No GPU devices found. Test Aborted." );
 
     // Check for user defined limits
-    if( getenv( "NLOOP_MAX" ) != NULL ) NLOOP = atoi( getenv( "NLOOP_MAX" ) );
-    if( getenv( "MIN_GPU_SIZE" ) != NULL ) MIN_SIZE = atoi( getenv( "MIN_GPU_SIZE" ) );
-    if( getenv( "MED_GPU_SIZE" ) != NULL ) MED_SIZE = atoi( getenv( "MED_GPU_SIZE" ) );
-    if( getenv( "MAX_GPU_SIZE" ) != NULL ) MAX_SIZE = atoi( getenv( "MAX_GPU_SIZE" ) );
-    usedMem = MAX_SIZE * sizeof(float);
+    checkEnvGPU( &NLOOP, &smin, &smed, &smax );
+    usedMem = smax * sizeof(float);
 
     // Select first GPU in the node
     cudaGetDevice( &deviceID );
@@ -72,11 +69,11 @@ int main( int argc, char **argv )
 
     /* Allocate and initialize variables */
     srand( SEED );
-    cudaMallocHost( (void **) &A, MAX_SIZE*sizeof(float) ); 
+    cudaMallocHost( (void **) &A, smax*sizeof(float) ); 
     invRND = 1.0E0 / (double)RAND_MAX;
-    for( i = 0; i < MAX_SIZE; i++ ) A[i] = invRND*rand();
+    for( i = 0; i < smax; i++ ) A[i] = invRND*rand();
 
-    cudaMalloc( (void **) &A_d, MAX_SIZE*sizeof(float) );
+    cudaMalloc( (void **) &A_d, smax*sizeof(float) );
     if( !A || !A_d )
        fatalError( "Failed to allocate memory in GPU bandwidth test." );
 
@@ -85,12 +82,12 @@ int main( int argc, char **argv )
     // is long enough for the timings to be accurate                     
     //================================================================
     // Warmup processor with a medium size DGEMM
-    cudaMemcpy( A_d, A, MED_SIZE * sizeof(float), cudaMemcpyHostToDevice );
+    cudaMemcpy( A_d, A, smed * sizeof(float), cudaMemcpyHostToDevice );
     // Test is current NLOOP is enough to capture fastest test cases
     cudaDeviceSynchronize();
     tStart = benchTimer();
     for(j = 0; j < NLOOP; j++){
-        cudaMemcpy( A_d, A, MIN_SIZE * sizeof(float), cudaMemcpyHostToDevice );
+        cudaMemcpy( A_d, A, smin * sizeof(float), cudaMemcpyHostToDevice );
     }
     cudaDeviceSynchronize();
     timeMin = benchTimer() - tStart;
@@ -100,10 +97,10 @@ int main( int argc, char **argv )
     // Execute test for each requested size                  
     //================================================================
     localMax = 0.0;
-    for( size = MIN_SIZE; size <= MAX_SIZE; size = size*2 ){
+    for( size = smin; size <= smax; size = size*2 ){
 
         // Warmup processor with a medium size DGEMM
-        cudaMemcpy( A_d, A, MED_SIZE * sizeof(float), cudaMemcpyHostToDevice );
+        cudaMemcpy( A_d, A, smed * sizeof(float), cudaMemcpyHostToDevice );
         cudaDeviceSynchronize();
 
         // Copy an array into another (read/write test)

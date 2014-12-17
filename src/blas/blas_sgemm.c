@@ -45,8 +45,8 @@ int main(int argc, char **argv)
     FILE   *fp, *fp2;
     char   testName[32] = "SGEMM", file1[64], file2[64];
     unsigned int i, j, size, localSize, nthreads;
-    unsigned int NLOOP = NLOOP_MAX, MED_SIZE = MED_BLAS_SIZE;
-    unsigned int MIN_SIZE = MIN_BLAS_SIZE, MAX_SIZE = MAX_BLAS_SIZE;
+    unsigned int NLOOP = NLOOP_MAX, smed = MED_BLAS_SIZE;
+    unsigned int smin = MIN_BLAS_SIZE, smax = MAX_BLAS_SIZE;
     double tScale = SEC, fpScale = GFLOP;
     double tStart, timeMin, overhead, threshold_lo, threshold_hi;
     double ops, matSize, usedMem, localMax;
@@ -58,17 +58,14 @@ int main(int argc, char **argv)
     float *A, *B, *C;
 
     // Check for user defined limits
-    if( getenv( "NLOOP_MAX" ) != NULL ) NLOOP = atoi( getenv( "NLOOP_MAX" ) );
-    if( getenv( "MIN_BLAS_SIZE" ) != NULL ) MIN_SIZE = atoi( getenv( "MIN_BLAS_SIZE" ) );
-    if( getenv( "MED_BLAS_SIZE" ) != NULL ) MED_SIZE = atoi( getenv( "MED_BLAS_SIZE" ) );
-    if( getenv( "MAX_BLAS_SIZE" ) != NULL ) MAX_SIZE = atoi( getenv( "MAX_BLAS_SIZE" ) );
+    checkEnvBLAS( &NLOOP, &smin, &smed, &smax );
 
     // Initialize variables
     localMax = 0;
     alpha    = 1.0E0;
     beta     = 1.0E0;
-    NN      = MAX_SIZE*MAX_SIZE;
-    usedMem  = (double)MAX_SIZE*(double)MAX_SIZE*sizeof(float)*3.0;
+    NN      = smax*smax;
+    usedMem  = (double)smax*(double)smax*sizeof(float)*3.0;
 
     // Allocate and initialize arrays
     // TODO: Consider Mersenne Twister to improve startup time
@@ -93,14 +90,14 @@ int main(int argc, char **argv)
     // is long enough for the timings to be accurate                     
     //================================================================
     // Warmup processor with a medium size SGEMM
-    cblas_sgemm( CblasRowMajor, CblasNoTrans, CblasNoTrans, MED_SIZE, MED_SIZE,
-                 MED_SIZE, alpha, A, MED_SIZE, B, MED_SIZE, beta, C, MED_SIZE );
+    cblas_sgemm( CblasRowMajor, CblasNoTrans, CblasNoTrans, smed, smed,
+                 smed, alpha, A, smed, B, smed, beta, C, smed );
     // Test is current NLOOP is enough to capture fastest test cases
     tStart = benchTimer();
     for(j = 0; j < NLOOP; j++){
-         cblas_sgemm( CblasRowMajor, CblasNoTrans, CblasNoTrans, MIN_SIZE, 
-                      MIN_SIZE, MIN_SIZE, alpha, A, MIN_SIZE, 
-                      B, MIN_SIZE, beta, C, MIN_SIZE );
+         cblas_sgemm( CblasRowMajor, CblasNoTrans, CblasNoTrans, smin, 
+                      smin, smin, alpha, A, smin, 
+                      B, smin, beta, C, smin );
     }
     timeMin = benchTimer() - tStart;
     resetInnerLoop( timeMin, threshold_lo, &NLOOP );
@@ -108,12 +105,12 @@ int main(int argc, char **argv)
     //================================================================
     // Execute test for each requested size                  
     //================================================================
-    for( size = MIN_SIZE; size <= MAX_SIZE; size = size*2 ){
+    for( size = smin; size <= smax; size = size*2 ){
 
         // Warmup processor with a medium size SGEMM
-        cblas_sgemm( CblasRowMajor, CblasNoTrans, CblasNoTrans, MED_SIZE, 
-                     MED_SIZE, MED_SIZE, alpha, A, MED_SIZE, B, MED_SIZE, 
-                     beta, C, MED_SIZE );
+        cblas_sgemm( CblasRowMajor, CblasNoTrans, CblasNoTrans, smed, 
+                     smed, smed, alpha, A, smed, B, smed, 
+                     beta, C, smed );
 
         // Call SGEMM to solve C = alpha*(A*B) + beta*C in each processor
         for( i = 0; i < NREPS; i++){

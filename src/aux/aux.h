@@ -1,6 +1,6 @@
 /*==============================================================================
  * File     : aux.h
- * Revision : 1.0 (2014-08-27)
+ * Revision : 1.3 (2014-12-17)
  * Author   : Carlos Rosales Fernandez [carlos.rosales.fernandez(at)gmail.com]
  *==============================================================================
  * Copyright 2014 Carlos Rosales Fernandez and The University of Texas at Austin
@@ -69,4 +69,16 @@ double *doubleVector( unsigned long size );
 int timerTest( double *overhead, double *threshold_lo, double *threshold_hi );
 
 int threadCount( void );
+
+int checkEnvBLAS( unsigned int *NLOOP, unsigned int *smin, 
+                  unsigned int *smed, unsigned int *smax  );
+
+int checkEnvGPU( unsigned int *NLOOP, unsigned int *smin, 
+                 unsigned int *smed, unsigned int *smax  );
+
+int checkEnvGPUBLAS( unsigned int *NLOOP, unsigned int *smin, 
+                     unsigned int *smed, unsigned int *smax  );
+
+int checkEnvPHI( unsigned int *NLOOP, unsigned int *smin, 
+                  unsigned int *smed, unsigned int *smax  );
 

@@ -42,8 +42,8 @@ int main( int argc, char **argv )
     FILE   *fp, *fp2;
     char   testName[32] = "GPU_SGEMM";
     int    Nsq, count, i, j, deviceID, gpuNum;
-    unsigned int size, localSize, NLOOP = NLOOP_MAX, MED_SIZE = MED_GPU_BLAS_SIZE;
-    unsigned int MIN_SIZE = MIN_GPU_BLAS_SIZE, MAX_SIZE = MAX_GPU_BLAS_SIZE*2;
+    unsigned int size, localSize, NLOOP = NLOOP_MAX, smed = MED_GPU_BLAS_SIZE;
+    unsigned int smin = MIN_GPU_BLAS_SIZE, smax = MAX_GPU_BLAS_SIZE*2;
     const float alpha = 1.0f;
     const float beta  = 1.0f;
     float  *A, *B, *C, *A_d, *B_d, *C_d;
@@ -60,11 +60,9 @@ int main( int argc, char **argv )
     }
 
     // Check for user defined limits
-    if( getenv( "NLOOP_MAX" ) != NULL ) NLOOP = atoi( getenv( "NLOOP_MAX" ) );
-    if( getenv( "MIN_GPU_BLAS_SIZE" ) != NULL ) MIN_SIZE = atoi( getenv( "MIN_GPU_BLAS_SIZE" ) );
-    if( getenv( "MED_GPU_BLAS_SIZE" ) != NULL ) MED_SIZE = atoi( getenv( "MED_GPU_BLAS_SIZE" ) );
-    if( getenv( "MAX_GPU_BLAS_SIZE" ) != NULL ) MAX_SIZE = atoi( getenv( "MAX_GPU_BLAS_SIZE" ) )*2;
-    usedMem = MAX_SIZE*MAX_SIZE*3.0*sizeof(float);
+    checkEnvGPUBLAS( &NLOOP, &smin, &smed, &smax );
+    smax = smax*2;
+    usedMem = smax*smax*3.0*sizeof(float);
     
     // Initiallize cublas
     status = cublasCreate(&handle);
@@ -83,7 +81,7 @@ int main( int argc, char **argv )
     printHeaders( fp, fp2, testName, usedMem, overhead, threshold_lo );
 
     /* Initialize variables */
-    Nsq    = MAX_SIZE * MAX_SIZE;
+    Nsq = smax * smax;
 
     /* Allocate and initialize host arrays */
     srand( SEED );
@@ -114,16 +112,16 @@ int main( int argc, char **argv )
     // is long enough for the timings to be accurate                     
     //================================================================
     // Warmup processor with a medium size DGEMM
-    cublasSgemm( handle, CUBLAS_OP_N, CUBLAS_OP_N, MED_SIZE, MED_SIZE, MED_SIZE,
-                  &alpha, A_d, MED_SIZE, B_d, MED_SIZE, &beta, C_d, MED_SIZE );
+    cublasSgemm( handle, CUBLAS_OP_N, CUBLAS_OP_N, smed, smed, smed,
+                  &alpha, A_d, smed, B_d, smed, &beta, C_d, smed );
     if( cublasGetError() != CUBLAS_STATUS_SUCCESS )
         fatalError( "Failed to run warmup cublasSGEMM" );
     // Test is current NLOOP is enough to capture fastest test cases
     cudaDeviceSynchronize();
     tStart = benchTimer();
     for(j = 0; j < NLOOP; j++){
-        cublasSgemm( handle, CUBLAS_OP_N, CUBLAS_OP_N, MIN_SIZE, MIN_SIZE, MIN_SIZE, 
-                     &alpha, A_d, MIN_SIZE, B_d, MIN_SIZE, &beta, C_d, MIN_SIZE );
+        cublasSgemm( handle, CUBLAS_OP_N, CUBLAS_OP_N, smin, smin, smin, 
+                     &alpha, A_d, smin, B_d, smin, &beta, C_d, smin );
     }
     cudaDeviceSynchronize();
     timeMin = benchTimer() - tStart;
@@ -133,11 +131,11 @@ int main( int argc, char **argv )
     // Execute test for each requested size                  
     //================================================================
     localMax = 0.0;
-    for( size = MIN_SIZE; size <= MAX_SIZE; size = size*2 ){
+    for( size = smin; size <= smax; size = size*2 ){
 
         // Warmup processor with a medium size DGEMM
-        cublasSgemm( handle, CUBLAS_OP_N, CUBLAS_OP_N, MED_SIZE, MED_SIZE, MED_SIZE, 
-                     &alpha, A_d, MED_SIZE, B_d, MED_SIZE, &beta, C_d, MED_SIZE );
+        cublasSgemm( handle, CUBLAS_OP_N, CUBLAS_OP_N, smed, MED_SIZE, smed, 
+                     &alpha, A_d, smed, B_d, smed, &beta, C_d, smed );
         cudaDeviceSynchronize();
 
         // Copy an array into another (read/write test)
