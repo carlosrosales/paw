@@ -44,7 +44,7 @@ p2p_rput.o        : $(SRCS) p2p_rput.c;        $(MPICC) $(CFLAGS) p2p_rput.c
 
 #Installation
 install:
-	mkdir -p ../ß$(INSTALL_DIR)
+	mkdir -p ../$(INSTALL_DIR)
 	mv -v ./col_racc$(BIN_SUFFIX) ./p2p_rget$(BIN_SUFFIX) ./p2p_rput$(BIN_SUFFIX)  ../$(INSTALL_DIR)
 
 # Clean
