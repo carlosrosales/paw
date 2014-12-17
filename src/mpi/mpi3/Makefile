@@ -18,7 +18,7 @@
 #  Basic definitions
 SHELL  = /bin/sh
 
-CFLAGS += $(ARCH_FLAGS)
+CFLAGS += $(ARCH_FLAGS) -I../../aux
 LFLAGS += $(ARCH_FLAGS)
 
 # Object files
@@ -36,8 +36,8 @@ p2p_rput : $(OBJS) p2p_put.o;         $(MPICC) $(LFLAGS) $(OBJS) p2p_rput.o     
 
 
 # Compilation Stage
-aux.o             : $(SRCS);                   $(MPICC) $(CFLAGS) ../aux/aux.c
-aux_mpi.o         : $(SRCS);                   $(MPICC) $(CFLAGS) ../aux/aux_mpi.c
+aux.o             : $(SRCS);                   $(MPICC) $(CFLAGS) ../../aux/aux.c
+aux_mpi.o         : $(SRCS);                   $(MPICC) $(CFLAGS) ../../aux/aux_mpi.c
 col_raccumulate.o : $(SRCS) col_raccumulate.c; $(MPICC) $(CFLAGS) col_raccumulate.c
 p2p_rget.o        : $(SRCS) p2p_rget.c;        $(MPICC) $(CFLAGS) p2p_rget.c
 p2p_rput.o        : $(SRCS) p2p_rput.c;        $(MPICC) $(CFLAGS) p2p_rput.c

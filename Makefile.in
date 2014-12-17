@@ -29,7 +29,7 @@ export INSTALL_DIR=../../bin
 # ---------------
 export CC=icc
 export MPICC=mpicc
-export CFLAGS=-c -O3 -I../aux
+export CFLAGS=-c -O3
 export LFLAGS=   -O3 -lrt
 export ARCH_FLAGS=-xHOST
 export OMP_FLAGS=-openmp
@@ -38,7 +38,7 @@ export OMP_FLAGS=-openmp
 #-------------
 #export CC=gcc
 #export MPICC=mpicc
-#export CFLAGS=-c -O3 -I../aux
+#export CFLAGS=-c -O3
 #export LFLAGS=-O3 -lrt
 #export ARCH_FLAGS=-march=native
 #export OMP_FLAGS=-fopenmp

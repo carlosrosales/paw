@@ -1,5 +1,5 @@
 # Makefile for PAW Xeon Phi tests
-# v1.0 (2014-08-27) Carlos Rosales-Fernandez
+# v1.3 (2014-12-17) Carlos Rosales-Fernandez
 #------------------------------------------------------------------------------
 # Copyright 2014 Carlos Rosales Fernandez and The University of Texas at Austin
 #
@@ -21,7 +21,7 @@ SHELL = /bin/sh
 
 CFLAGS += $(ARCH_FLAGS)
 CFLAGS += $(OMP_FLAGS)
-CFLAGS += $(PHI_CFLAGS)
+CFLAGS += $(PHI_CFLAGS) -I../aux
 
 LFLAGS += $(ARCH_FLAGS)
 LFLAGS += $(OMP_FLAGS)

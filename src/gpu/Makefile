@@ -1,5 +1,5 @@
 # Makefile for PAW GPU tests
-# v1.0 (2014-08-27) Carlos Rosales-Fernandez
+# v1.3 (2014-12-17) Carlos Rosales-Fernandez
 #------------------------------------------------------------------------------
 # Copyright 2014 Carlos Rosales Fernandez and The University of Texas at Austin
 #
@@ -19,7 +19,7 @@
 SHELL  = /bin/sh
 
 CFLAGS += $(ARCH_FLAGS)
-CFLAGS += $(CUDA_CFLAGS)
+CFLAGS += $(CUDA_CFLAGS) -I../aux
 
 LFLAGS += $(ARCH_FLAGS)
 LFLAGS += $(CUDA_LFLAGS)

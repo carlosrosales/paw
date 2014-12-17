@@ -18,7 +18,7 @@
 #  Basic definitions
 SHELL  = /bin/sh
 
-CFLAGS += $(ARCH_FLAGS)
+CFLAGS += $(ARCH_FLAGS) -I../aux
 LFLAGS += $(ARCH_FLAGS)
 
 # Object files

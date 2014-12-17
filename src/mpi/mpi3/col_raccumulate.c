@@ -102,7 +102,7 @@ int main(int argc, char **argv)
     tStart = benchTimer();
     if( proc > 0 ){
         for(j = 0; j < NLOOP; j++){
-        MPI_Accumulate( B, smin, MPI_DOUBLE, 0, 0, smin, MPI_DOUBLE, MPI_SUM, win, &req );
+        MPI_Raccumulate( B, smin, MPI_DOUBLE, 0, 0, smin, MPI_DOUBLE, MPI_SUM, win, &req );
         MPI_Wait( &req, &stat );
         MPI_Win_flush_all( win );
         }
@@ -120,7 +120,7 @@ int main(int argc, char **argv)
 
         // Warmup with a medium size message
         if( proc > 0 ){
-          MPI_Accumulate( B, smed, MPI_DOUBLE, 0, 0, smed, MPI_DOUBLE, MPI_SUM, win, &req );
+          MPI_Raccumulate( B, smed, MPI_DOUBLE, 0, 0, smed, MPI_DOUBLE, MPI_SUM, win, &req );
           MPI_Wait( &req, &stat );
           MPI_Win_flush_all( win );
         }
@@ -131,7 +131,7 @@ int main(int argc, char **argv)
             tStart = benchTimer();
             if( proc > 0 ){
                 for(j = 0; j < NLOOP; j++){
-                  MPI_Accumulate( B, size, MPI_DOUBLE, 0, 0, size, MPI_DOUBLE, MPI_SUM, win, &req );
+                  MPI_Raccumulate( B, size, MPI_DOUBLE, 0, 0, size, MPI_DOUBLE, MPI_SUM, win, &req );
                   MPI_Wait( &req, &stat );
                   MPI_Win_flush_all( win );
                 }
