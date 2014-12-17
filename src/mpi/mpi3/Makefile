@@ -30,8 +30,8 @@ all: col_racc p2p_rget p2p_rput
 
 # Linking Stage
 col_racc : $(OBJS) col_raccumulate.o; $(MPICC) $(LFLAGS) $(OBJS) col_raccumulate.o -o col_racc$(BIN_SUFFIX)
-p2p_rget : $(OBJS) p2p_get.o;         $(MPICC) $(LFLAGS) $(OBJS) p2p_rget.o        -o p2p_rget$(BIN_SUFFIX)
-p2p_rput : $(OBJS) p2p_put.o;         $(MPICC) $(LFLAGS) $(OBJS) p2p_rput.o        -o p2p_rput$(BIN_SUFFIX)
+p2p_rget : $(OBJS) p2p_rget.o;        $(MPICC) $(LFLAGS) $(OBJS) p2p_rget.o        -o p2p_rget$(BIN_SUFFIX)
+p2p_rput : $(OBJS) p2p_rput.o;        $(MPICC) $(LFLAGS) $(OBJS) p2p_rput.o        -o p2p_rput$(BIN_SUFFIX)
 
 
 
