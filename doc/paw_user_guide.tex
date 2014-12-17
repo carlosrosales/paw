@@ -73,7 +73,7 @@
 \verb+ +
 \vspace{1em}
 \begin{flushright}
-\huge\bf PAW v1.1\\
+\huge\bf PAW v1.3\\
 \rule{\textwidth}{4pt}
 \large{\bf Performance Assessment Workbench User Guide\\
 Document Revision 1.0\\
@@ -97,7 +97,7 @@ Copyright 2014 Carlos Rosales Fern\'andez and the University of Texas at Austin.
 \end{titlepage}
 
 \begin{abstract}
-The Performance Assessment Workbench (PAW) is an Open Source suite of microbenchmarks designed with simplicity and reliability in mind. This User Guide documents the implementation details and the general usage for all components of PAW. As of version 1.1 the suite contains code designed to test:
+The Performance Assessment Workbench (PAW) is an Open Source suite of microbenchmarks designed with simplicity and reliability in mind. This User Guide documents the implementation details and the general usage for all components of PAW. As of version 1.3 the suite contains code designed to test:
 
 \begin{itemize}
 \item BLAS floating point performance in CPUs, GPUs and Xeon Phi
@@ -116,7 +116,7 @@ Throughout the text we have used text boxes to highlight important information. 
 
 Our intention is to create a set of simple benchmark implementations that are transparent to use and understand. The hope is that users of this set of tools will actually look at the code implementation and understand exactly what is being measured, without having to peel off multiple layers of obfuscating code. We have made an effort to write simple, reliable, and thoroughly commented C code, but we are well aware that documentation is never perfect or complete. We welcome all feedback. Feedback that includes suggestions for improvement in the usability, reliability, and accuracy of these benchmarks is particularly welcome. 
 
-Version 1.1 is a bug fix release addressing issues in the MPI test \verb+p2p_isend_ping+.
+Version 1.3 is a feature release which adds MPI-3.0 point to point tests to the benchmark suite.
 \end{abstract}
 
 \tableofcontents
@@ -124,13 +124,13 @@ Version 1.1 is a bug fix release addressing issues in the MPI test \verb+p2p_ise
 \chapter{Installation}
 The Performance Analysis Workbench is simple to install. In order to use all of its features you will need GNU Make and a C compiler. In order to test GPU performance you will also need the CUDA compiler and CUBLAS linear algebra libraries. If testing the Xeon Phi you will also need a compiler and with support for offload to the Xeon Phi.
 
-First of all obtain the latest version tarball, currently paw-1.0.tar.gz, and expand it in a convenient location in your system:
+First of all obtain the latest version tarball, currently paw-1.3.tar.gz, and expand it in a convenient location in your system:
 
 \begin{verbatim}
-    tar xzvf ./paw-1.0.tar.gz
+    tar xzvf ./paw-1.3.tar.gz
 \end{verbatim}
 
-This will create a top level directory called \verb+paw-1.0+, with subdirectories \verb+/bin+, \verb+/doc+, and \verb+/src+. Inside the source directory you will also find separate subdirectories for common functions (\verb+aux+) and the floating point (\verb+/blas+), MPI (\verb+/mpi+), GPU (\verb+/gpu+) and Xeon Phi (\verb+/phi+) benchmarking tools.
+This will create a top level directory called \verb+paw-1.3+, with subdirectories \verb+/bin+, \verb+/doc+, and \verb+/src+. Inside the source directory you will also find separate subdirectories for common functions (\verb+aux+) and the floating point (\verb+/blas+), MPI (\verb+/mpi+), GPU (\verb+/gpu+) and Xeon Phi (\verb+/phi+) benchmarking tools.
 
 Change directory to the top level of PAW and edit \verb+Makefile.in+ to reflect your compiler and library locations. A default template is provided that uses the Intel compiler, the Intel MKL BLAS libraries, the Mvapich2 MPI libraries and NVIDIA's nvcc compiler.
 
@@ -146,9 +146,12 @@ You may also choose to build only a subset of test codes:
 \begin{verbatim}
     make blas && make blas-install
     make mpi  && make mpi-install
+    make mpi3 && make mpi3-install
     make gpu  && make gpu-install
     make phi  && make phi-install
 \end{verbatim}
+
+Notice that the MPI-3.0 tests have been separated from the rest of MPI tests because many libraries still do not support these functions. They may eventually be merged with the rest of the MPI tests.
 
 The executable tests will be placed in the \verb+/bin+ directory unless a \verb+PREFIX=/install/dir/location/+ option is passed to Make in the installation step. For example, to build only the tests relevant to regular CPUs and install the resulting executables in the \verb+/home/me/paw/+ directory one would execute:
 
@@ -265,19 +268,26 @@ PAW provides independent codes to measure the performance of the following MPI c
 \begin{itemize}
 \item{Collectives}
 \begin{itemize}
+    \item{MPI\_Accumulate with active synchronization ( \texttt{col\_acc} )}
+    \item{MPI\_Accumulate with passive synchronization ( \texttt{col\_acc\_fence} )}
 	\item{MPI\_Allgather ( \texttt{col\_agtr} )}
 	\item{MPI\_Allreduce ( \texttt{col\_ardc} )}
 	\item{MPI\_Alltoall ( \texttt{col\_a2a} )}
 	\item{MPI\_Bcast ( \texttt{col\_bct} )}
 	\item{MPI\_Gather ( \texttt{col\_gtr} )}
 	\item{MPI\_Reduce ( \texttt{col\_rdc} )}
+	\item{MPI\_Raccumulate ( \texttt{col\_racc} )}
 	\item{MPI\_Scatter ( \texttt{col\_sct} )}
 \end{itemize}
 \item{Point to Point}
 \begin{itemize}
-	\item{MPI\_Get ( \texttt{p2p\_get} )}
+	\item{MPI\_Get with active synchronization ( \texttt{p2p\_get} )}
+	\item{MPI\_Get with passive synchronization ( \texttt{p2p\_get\_fence} )}
 	\item{MPI\_Isend ( \texttt{p2p\_isend} )}
-	\item{MPI\_Put ( \texttt{p2p\_put} )}
+	\item{MPI\_Put with active synchronization ( \texttt{p2p\_put} )}
+	\item{MPI\_Put with passive synchronization ( \texttt{p2p\_put\_fence} )}
+	\item{MPI\_Rget ( \texttt{p2p\_rget} )}
+	\item{MPI\_Rput ( \texttt{p2p\_rput} )}
 	\item{MPI\_Send ( \texttt{p2p\_send} )}
 \end{itemize}
 \item{Specialized}
@@ -291,33 +301,70 @@ PAW provides independent codes to measure the performance of the following MPI c
 
 Each of the individual tests is described in the sections below.
 
-\section{Collectives}
+\section{MPI-1.0 Collectives}
 \label{sec:collectives}
 
 In all collectives tests the call itself is executed by all processes, timed independently, and the minimum value of the timed intervals chosen. Note that this has the serious disadvantage of ignoring issues with messages sent using the eager protocol. An \verb+MPI_Bcast+ or \verb+MPI_Scatter+ using a small message size may report incorrect timings because it is not forced to wait for a completion signal from any of the other tasks involved. This means that the effective bandwidth may be overestimated for small messages in these cases. In order to minimize this effect we use the maximum measured time across all tasks when reporting timings and bandwidth for these two calls, while we use the minimum time for all others. This is not a perfect solution. If precise measurements of the performance of these calls for small messages are required we suggest altering the code to ensure synchronization has completed within the timing section of the code. 
 
-\section{Point to point}
-This section describes the setup for all point to point communication schemes considered in this test suite.
-
-\subsection{p2p\_get}
-The \verb+p2p_get+ benchmark uses the \verb+MPI_Get+ call, together with synchronization calls \verb+MPI_Win_start+, \verb+MPI_Win_complete+, \verb+MPI_Win_post+ and \verb+MPI_Win_wait+. The communication happens in one direction only, with the first half of the tasks pulling data from their partner tasks in the second half. Within the timed section of the code only the calls shown in Table \ref{tab:get} are executed.
+\section{MPI-2.0 Collectives}
+\subsection{col\_acc}
+The \verb+col_acc+ benchmark uses the \verb+MPI_Accumulate+ call, together with active synchronization calls \verb+MPI_Win_start+, \verb+MPI_Win_complete+, \verb+MPI_Win_post+ and \verb+MPI_Win_wait+. The data is reduced in task 0 using the \verb+MPI_SUM+ operation. Within the timed section of the code only the calls shown in Table \ref{tab:acc} are executed.
 
 \begin{table}[ht]
 \centering
-\caption{Timed code in \texttt{p2p\_get} test.}
-\label{tab:get}
+\caption{Timed code in \texttt{col\_acc} test.}
+\label{tab:acc}
 \begin{tabular}{|l|l|}
 \hline
-\bf{Tasks 0...(n/2-1)}	   & \bf{Tasks n/2...(n-1)}\\\hline
+\bf{Tasks 1...(n-1)}	   & \bf{Task 0}\\\hline
 MPI\_Win\_start( ... );    & MPI\_Win\_post( ... );\\
-MPI\_Get( ... );           & MPI\_Win\_wait( ... );\\
+MPI\_Accumulate( ... );    & MPI\_Win\_wait( ... );\\
 MPI\_Win\_complete( ... ); & \\\hline
 \end{tabular}
 \end{table}
 
-The code writes a summary to \verb+stdout+, and timing and bandwidth results to files named \verb+get_time-np_XXXX.dat+ and \verb+get_bw-np_XXXX.dat+, where \verb+XXXX+ is the number of processors used in the test.
+The code writes a summary to \verb+stdout+, and timing and bandwidth results to files named \verb+acc_time-np_XXXX.dat+ and \verb+acc_bw-np_XXXX.dat+, where \verb+XXXX+ is the number of processors used in the test.
 
 \FloatBarrier
+\subsection{col\_acc\_fence}
+The \verb+col_acc_fence+ benchmark uses the \verb+MPI_Accumulate+ call, together with passive synchronization calls to \verb+MPI_Win_fence+. The data is reduced in task 0 using the \verb+MPI_SUM+ operation. Within the timed section of the code only the calls shown in Table \ref{tab:acc_fence} are executed.
+
+\begin{table}[ht]
+\centering
+\caption{Timed code in \texttt{col\_acc\_fence} test.}
+\label{tab:acc_fence}
+\begin{tabular}{|l|l|}
+\hline
+\bf{Tasks 1...(n-1)}	    & \bf{Task 0}\\\hline
+MPI\_Win\_fence( ... ); & MPI\_Win\_fence( ... );\\
+MPI\_Accumulate( ... ); & MPI\_Win\_fence( ... );\\
+MPI\_Win\_fence( ... ); & \\\hline
+\end{tabular}
+\end{table}
+
+The code writes a summary to \verb+stdout+, and timing and bandwidth results to files named \verb+accfence_time-np_XXXX.dat+ and \verb+accfence_bw-np_XXXX.dat+, where \verb+XXXX+ is the number of processors used in the test.
+
+\section{MPI-3.0 Collectives}
+The \verb+col_racc+ benchmark uses the \verb+MPI_Raccumulate+ call, together with synchronization calls to \verb+MPI_Wait+ (local synchronization), and \verb+MPI_Win_flush_all+ (remote synchronization). The data is reduced in task 0 using the \verb+MPI_SUM+ operation. Within the timed section of the code only the calls shown in Table \ref{tab:racc} are executed.
+
+\begin{table}[ht]
+\centering
+\caption{Timed code in \texttt{p2p\_racc} test.}
+\label{tab:racc}
+\begin{tabular}{|l|}
+\hline
+\bf{Tasks 1...(n-1)}	   \\\hline
+MPI\_Raccumulate( ... );           \\
+MPI\_Wait( ... );           \\
+MPI\_Win\_flush\_all( ... );\\\hline
+\end{tabular}
+\end{table}
+
+The code writes a summary to \verb+stdout+, and timing and bandwidth results to files named \verb+rget_time-np_XXXX.dat+ and \verb+rget_bw-np_XXXX.dat+, where \verb+XXXX+ is the number of processors used in the test.
+
+\section{MPI-1.0 Point to Point}
+This section describes the setup for all MPI-1.0 point to point communication schemes considered in this test suite.
+
 \subsection{p2p\_isend}
 The \verb+p2p_isend+ benchmark uses the \verb+MPI_Isend+, \verb+MPI_Irecv+, and \verb+MPI_Wait+ calls. The communication happens in a ping-pong setup, with the first half of the tasks sending data to their partner tasks in the second half, and then reversing the pattern after synchronization. Within the timed section of the code only the calls shown in Table \ref{tab:isend} are executed.
 
@@ -338,8 +385,67 @@ MPI\_Wait( ... );       & MPI\_Wait( ... );\\\hline
 The code writes a summary to \verb+stdout+, and timing and bandwidth results to files named \verb+isend_time-np_XXXX.dat+ and \verb+isend_bw-np_XXXX.dat+, where \verb+XXXX+ is the number of processors used in the test.
 
 \FloatBarrier
+\subsection{p2p\_send}
+The \verb+p2p_isend+ benchmark uses the \verb+MPI_Send+ and \verb+MPI_Recv+ calls. The communication happens in a ping-pong setup, with the first half of the tasks sending data to their partner tasks in the second half, and then reversing the pattern after synchronization. Within the timed section of the code only the calls shown in Table \ref{tab:send} are executed.
+
+\begin{table}[ht]
+\centering
+\caption{Timed code in \texttt{p2p\_send} test.}
+\label{tab:send}
+\begin{tabular}{|l|l|}
+\hline
+\bf{Tasks 0...(n/2-1)}	& \bf{Tasks n/2...(n-1)}\\\hline
+MPI\_Send( ... );       & MPI\_Recv( ... );\\
+MPI\_Recv( ... );       & MPI\_Send( ... );\\\hline
+\end{tabular}
+\end{table}
+
+The code writes a summary to \verb+stdout+, and timing and bandwidth results to files named \verb+send_time-np_XXXX.dat+ and \verb+send_bw-np_XXXX.dat+, where \verb+XXXX+ is the number of processors used in the test.
+
+\FloatBarrier
+\section{MPI-2.0 Point to Point}
+This section describes the setup for all MPI-2.0 point to point communication schemes considered in this test suite.
+
+\subsection{p2p\_get}
+The \verb+p2p_get+ benchmark uses the \verb+MPI_Get+ call, together with active synchronization calls \verb+MPI_Win_start+, \verb+MPI_Win_complete+, \verb+MPI_Win_post+ and \verb+MPI_Win_wait+. The communication happens in one direction only, with the first half of the tasks pulling data from their partner tasks in the second half. Within the timed section of the code only the calls shown in Table \ref{tab:get} are executed.
+
+\begin{table}[ht]
+\centering
+\caption{Timed code in \texttt{p2p\_get} test.}
+\label{tab:get}
+\begin{tabular}{|l|l|}
+\hline
+\bf{Tasks 0...(n/2-1)}	   & \bf{Tasks n/2...(n-1)}\\\hline
+MPI\_Win\_start( ... );    & MPI\_Win\_post( ... );\\
+MPI\_Get( ... );           & MPI\_Win\_wait( ... );\\
+MPI\_Win\_complete( ... ); & \\\hline
+\end{tabular}
+\end{table}
+
+The code writes a summary to \verb+stdout+, and timing and bandwidth results to files named \verb+get_time-np_XXXX.dat+ and \verb+get_bw-np_XXXX.dat+, where \verb+XXXX+ is the number of processors used in the test.
+
+\FloatBarrier
+\subsection{p2p\_get\_fence}
+The \verb+p2p_get+ benchmark uses the \verb+MPI_Get+ call, together with passive synchronization calls to \verb+MPI_Win_fence+. The communication happens in one direction only, with the first half of the tasks pulling data from their partner tasks in the second half. Within the timed section of the code only the calls shown in Table \ref{tab:get_fence} are executed.
+
+\begin{table}[ht]
+\centering
+\caption{Timed code in \texttt{p2p\_get\_fence} test.}
+\label{tab:get_fence}
+\begin{tabular}{|l|l|}
+\hline
+\bf{Tasks 0...(n/2-1)}	   & \bf{Tasks n/2...(n-1)}\\\hline
+MPI\_Win\_fence( ... );    & MPI\_Win\_fence( ... );\\
+MPI\_Get( ... );           & MPI\_Win\_fence( ... );\\
+MPI\_Win\_fence( ... ); & \\\hline
+\end{tabular}
+\end{table}
+
+The code writes a summary to \verb+stdout+, and timing and bandwidth results to files named \verb+getfence_time-np_XXXX.dat+ and \verb+getfence_bw-np_XXXX.dat+, where \verb+XXXX+ is the number of processors used in the test.
+
+\FloatBarrier
 \subsection{p2p\_put}
-The \verb+p2p_put+ benchmark uses the \verb+MPI_Put+ call, together with synchronization calls \verb+MPI_Win_start+, \verb+MPI_Win_complete+, \verb+MPI_Win_post+ and \verb+MPI_Win_wait+. The communication happens in one direction only, with the first half of the tasks pulling data from their partner tasks in the second half. Within the timed section of the code only the calls shown in Table \ref{tab:put} are executed.
+The \verb+p2p_put+ benchmark uses the \verb+MPI_Put+ call, together with active synchronization calls \verb+MPI_Win_start+, \verb+MPI_Win_complete+, \verb+MPI_Win_post+ and \verb+MPI_Win_wait+. The communication happens in one direction only, with the first half of the tasks pulling data from their partner tasks in the second half. Within the timed section of the code only the calls shown in Table \ref{tab:put} are executed.
 
 \begin{table}[ht]
 \centering
@@ -357,22 +463,64 @@ MPI\_Win\_complete( ... ); & \\\hline
 The code writes a summary to \verb+stdout+, and timing and bandwidth results to files named \verb+put_time-np_XXXX.dat+ and \verb+put_bw-np_XXXX.dat+, where \verb+XXXX+ is the number of processors used in the test.
 
 \FloatBarrier
-\subsection{p2p\_send}
-The \verb+p2p_isend+ benchmark uses the \verb+MPI_Send+ and \verb+MPI_Recv+ calls. The communication happens in a ping-pong setup, with the first half of the tasks sending data to their partner tasks in the second half, and then reversing the pattern after synchronization. Within the timed section of the code only the calls shown in Table \ref{tab:send} are executed.
+\subsection{p2p\_put\_fence}
+The \verb+p2p_put+ benchmark uses the \verb+MPI_Put+ call, together with passive synchronization calls to \verb+MPI_Win_fence+. The communication happens in one direction only, with the first half of the tasks pulling data from their partner tasks in the second half. Within the timed section of the code only the calls shown in Table \ref{tab:put_fence} are executed.
 
 \begin{table}[ht]
 \centering
-\caption{Timed code in \texttt{p2p\_send} test.}
-\label{tab:send}
+\caption{Timed code in \texttt{p2p\_put\_fence} test.}
+\label{tab:put_fence}
 \begin{tabular}{|l|l|}
 \hline
-\bf{Tasks 0...(n/2-1)}	& \bf{Tasks n/2...(n-1)}\\\hline
-MPI\_Send( ... );       & MPI\_Recv( ... );\\
-MPI\_Recv( ... );       & MPI\_Send( ... );\\\hline
+\bf{Tasks 0...(n/2-1)}	   & \bf{Tasks n/2...(n-1)}\\\hline
+MPI\_Win\_fence( ... );    & MPI\_Win\_fence( ... );\\
+MPI\_Put( ... );           & MPI\_Win\_fence( ... );\\
+MPI\_Win\_fence( ... ); & \\\hline
 \end{tabular}
 \end{table}
 
-The code writes a summary to \verb+stdout+, and timing and bandwidth results to files named \verb+send_time-np_XXXX.dat+ and \verb+send_bw-np_XXXX.dat+, where \verb+XXXX+ is the number of processors used in the test.
+The code writes a summary to \verb+stdout+, and timing and bandwidth results to files named \verb+putfence_time-np_XXXX.dat+ and \verb+putfence_bw-np_XXXX.dat+, where \verb+XXXX+ is the number of processors used in the test.
+
+\FloatBarrier
+\section{MPI-3.0 Point to Point}
+This section describes the setup for all MPI-3.0 point to point communication schemes considered in this test suite.
+
+\subsection{p2p\_rget}
+The \verb+p2p_rget+ benchmark uses the \verb+MPI_Rget+ call, together with synchronization calls to \verb+MPI_Wait+ (local synchronization), and \verb+MPI_Win_flush_all+ (remote synchronization). The communication happens in one direction only, with the first half of the tasks pulling data from their partner tasks in the second half. Within the timed section of the code only the calls shown in Table \ref{tab:rget} are executed.
+
+\begin{table}[ht]
+\centering
+\caption{Timed code in \texttt{p2p\_rget} test.}
+\label{tab:rget}
+\begin{tabular}{|l|}
+\hline
+\bf{Tasks 0...(n/2-1)}	   \\\hline
+MPI\_Rget( ... );           \\
+MPI\_Wait( ... );           \\
+MPI\_Win\_flush\_all( ... );\\\hline
+\end{tabular}
+\end{table}
+
+The code writes a summary to \verb+stdout+, and timing and bandwidth results to files named \verb+rget_time-np_XXXX.dat+ and \verb+rget_bw-np_XXXX.dat+, where \verb+XXXX+ is the number of processors used in the test.
+
+\FloatBarrier
+\subsection{p2p\_rput}
+The \verb+p2p_rput+ benchmark uses the \verb+MPI_Rput+ call, together with synchronization calls \verb+MPI_Win_wait+ (local synchronization) and \verb+MPI_Win_flush_all+ (remote synchronization). The communication happens in one direction only, with the first half of the tasks pulling data from their partner tasks in the second half. Within the timed section of the code only the calls shown in Table \ref{tab:rput} are executed.
+
+\begin{table}[ht]
+\centering
+\caption{Timed code in \texttt{p2p\_rput} test.}
+\label{tab:rput}
+\begin{tabular}{|l|}
+\hline
+\bf{Tasks 0...(n/2-1)} \\\hline
+MPI\_Rput( ... );      \\
+MPI\_Wait( ... );      \\
+MPI\_Win\_flush\_all( ... );\\\hline
+\end{tabular}
+\end{table}
+
+The code writes a summary to \verb+stdout+, and timing and bandwidth results to files named \verb+put_time-np_XXXX.dat+ and \verb+put_bw-np_XXXX.dat+, where \verb+XXXX+ is the number of processors used in the test.
 
 \section{Specialized}
 This section describes point to point measurements that do not employ a ping-pong setup, and that are used for specialized purposes.

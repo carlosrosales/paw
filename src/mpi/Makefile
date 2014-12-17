@@ -1,5 +1,5 @@
 # Makefile for PAW MPI tests
-# v1.0 (2014-08-27) Carlos Rosales-Fernandez
+# v1.3 (2014-12-17) Carlos Rosales-Fernandez
 #------------------------------------------------------------------------------
 # Copyright 2014 Carlos Rosales Fernandez and The University of Texas at Austin
 #

@@ -1,6 +1,6 @@
 /*==============================================================================
  * Program  : p2p_isend_ping
- * Revision : 1.1 (2014-09-08)
+ * Revision : 1.3 (2014-12-17)
  * Author   : Carlos Rosales Fernandez [carlos.rosales.fernandez(at)gmail.com]
  *==============================================================================
  * Copyright 2014 Carlos Rosales Fernandez and The University of Texas at Austin

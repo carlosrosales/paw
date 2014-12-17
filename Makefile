@@ -18,7 +18,7 @@
 # Change CC, MPICC and the corresponding flags to match your own compiler in
 # file "Makefile.in". You should not have to edit this file at all.
 #
-# v1.0 (2014-08-27)  Carlos Rosales Fernandez
+# v1.3 (2014-12-17)  Carlos Rosales Fernandez
 
 include ./Makefile.in
 
@@ -32,7 +32,7 @@ INSTALL_LOG="`pwd`/paw_install.log"
 
 SEPARATOR="======================================================================"
 PKG      ="Package  : PAW"
-VER      ="Version  : 1.0"
+VER      ="Version  : 1.3"
 DATE     ="Date     : `date +%Y.%m.%d`"
 SYSTEM   ="System   : `uname -sr`"
 COMPILER ="Compiler : `$(CC) --version | head -n 1`"
@@ -41,6 +41,7 @@ paw:  logs blas-build mpi-build check-build
 all:  logs blas-build mpi-build gpu-build phi-build check-build
 blas: logs blas-build check-build
 mpi:  logs mpi-build check-build
+mpi3: logs mpi3-build check-build
 gpu:  logs gpu-build check-build
 phi:  logs phi-build check-build
 
@@ -48,6 +49,7 @@ install:      blas-raw-install mpi-raw-install check-install
 all-install:  blas-raw-install mpi-raw-install gpu-raw-install phi-raw-install check-install
 blas-install: blas-raw-install check-install
 mpi-install:  mpi-raw-install check-install
+mpi3-install: mpi3-raw-install check-install
 gpu-install:  gpu-raw-install check-install
 phi-install:  phi-raw-install check-install
 
@@ -94,11 +96,23 @@ mpi-build:
 	@$(MAKE) --directory=`pwd`/src/mpi all    |& tee -a $(BUILD_LOG)
 	@echo                                     |  tee -a $(BUILD_LOG)
 
+mpi3-build:
+# MPI-3.0 Test Codes
+	@echo "Generating MPI-3.0 tests..."         |  tee -a $(BUILD_LOG)
+	@$(MAKE) --directory=`pwd`/src/mpi/mpi3 all |& tee -a $(BUILD_LOG)
+	@echo                                       |  tee -a $(BUILD_LOG)
+
 mpi-raw-install:
 # MPI Test Install
 	@echo "Installing MPI test executables..." |  tee -a $(INSTALL_LOG)
 	@$(MAKE) --directory=`pwd`/src/mpi install |& tee -a $(INSTALL_LOG)
 	@echo                                      |  tee -a $(INSTALL_LOG)
+	
+mpi3-raw-install:
+# MPI Test Install
+	@echo "Installing MPI-3.0 test executables..."  |  tee -a $(INSTALL_LOG)
+	@$(MAKE) --directory=`pwd`/src/mpi/mpi3 install |& tee -a $(INSTALL_LOG)
+	@echo                                           |  tee -a $(INSTALL_LOG)
 
 gpu-build:
 # GPU Test Codes
@@ -128,6 +142,7 @@ clean:
 # Cleanup all directories
 	@$(MAKE) --directory=`pwd`/src/blas clean
 	@$(MAKE) --directory=`pwd`/src/mpi clean
+	@$(MAKE) --directory=`pwd`/src/mpi/mpi3 clean
 	@$(MAKE) --directory=`pwd`/src/gpu clean
 	@$(MAKE) --directory=`pwd`/src/phi clean
 
@@ -135,6 +150,7 @@ distclean:
 # Cleanup all directories and binaries
 	@$(MAKE) --directory=`pwd`/src/blas clean
 	@$(MAKE) --directory=`pwd`/src/mpi clean
+	@$(MAKE) --directory=`pwd`/src/mpi/mpi3 clean
 	@$(MAKE) --directory=`pwd`/src/gpu clean
 	@$(MAKE) --directory=`pwd`/src/phi clean
 	rm ./bin/*

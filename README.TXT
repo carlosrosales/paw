@@ -1,4 +1,4 @@
-=== PAW v1.0 ===
+=== PAW v1.3 ===
 
 The Performance Assessment Workbench (PAW) is a suite of simple codes designed 
 to test baseline performance in high performance computing systems.
@@ -41,10 +41,12 @@ is passed to Make in the installation step.
 
 === CHANGELOG ===
 
-Revision 1.0: (2014-09-08) Bugfix - corrected error in p2p_isend_ping.c
+Revision 1.3: (2014-12-17) Added MPI-3.0 point to point tests
+Revision 1.2: (2014-11-19) Minor update to output text banners to show correct version
+Revision 1.1: (2014-09-08) Bugfix - corrected error in p2p_isend_ping.c
 Revision 1.0: (2014-08-27) First public release of PAW
 
-2014-09-08 \ Carlos Rosales Fernandez \ carlos.rosales.fernandez@gmail.com
+2014-12-17 \ Carlos Rosales Fernandez \ carlos.rosales.fernandez@gmail.com
 
 
 
