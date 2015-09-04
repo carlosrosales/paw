@@ -134,7 +134,7 @@ int main( int argc, char **argv )
     for( size = smin; size <= smax; size = size*2 ){
 
         // Warmup processor with a medium size DGEMM
-        cublasSgemm( handle, CUBLAS_OP_N, CUBLAS_OP_N, smed, MED_SIZE, smed, 
+        cublasSgemm( handle, CUBLAS_OP_N, CUBLAS_OP_N, smed, smed, smed, 
                      &alpha, A_d, smed, B_d, smed, &beta, C_d, smed );
         cudaDeviceSynchronize();
 
