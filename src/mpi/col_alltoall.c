@@ -64,14 +64,6 @@ int main(int argc, char **argv)
 
     // Initialize local variables
     dblSize = sizeof(double);
-
-    // Resize max size for MPI_alltoall, since the MPI library footprint
-    // increases significantly in this test
-    resize = nprocs;
-    if( nprocs > 10 ) resize = 0.1*nprocs;
-    if( smin > resize ) smin = (unsigned int)( (double)smin / resize );
-    smed = (unsigned int)( (double)smed / resize );
-    smax = (unsigned int)( (double)smax / resize );
     UsedMem = (double)smax*(double)nprocs*(double)dblSize*2.0;
 
     // Open output file and write header
