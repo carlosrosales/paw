@@ -46,8 +46,8 @@ int main(int argc, char **argv)
     double *A, *B;
 
     pipe = popen( "cat /proc/cpuinfo | grep processor | wc -l", "r" );
-    fgets( tmpStr, 8, pipe ); pclose(pipe);
-    nodeCPUs = atoi(tmpStr);
+    fgets( pipeStr, 8, pipe ); pclose(pipe);
+    nodeCPUs = atoi(pipeStr);
 
     // Initialize parallel environment
     MPI_Init( &argc, &argv );
