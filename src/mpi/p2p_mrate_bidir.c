@@ -1,6 +1,6 @@
 /*==============================================================================
  * Program  : p2p_rate
- * Revision : 1.3 (2014-12-17)
+ * Revision : 1.4 (2015-10-13)
  * Author   : Carlos Rosales Fernandez [carlos.rosales.fernandez(at)gmail.com]
  *==============================================================================
  * Copyright 2014 Carlos Rosales Fernandez and The University of Texas at Austin
@@ -183,9 +183,9 @@ int main(int argc, char **argv)
             // sizeBytes is size of the message in bytes
             // msgBytes is actual data exchanged on the wire
             // work is the total numbe or message exchagnes timed
-            msgBytes  = (double)(size*npairs*dblSize);
-            sizeBytes = (double)(size*dblSize);
-            work      = (double)(npairs*windowSize);
+            msgBytes  = (double)size*(double)npairs*(double)dblSize;
+            sizeBytes = (double)size*(double)dblSize;
+            work      = (double)npairs*(double)windowSize;
             post_process( fp, fp2, threshold_hi, tElapsedGlobal, tScale, 
                           bwScale, size*dblSize, sizeBytes, work, &NLOOP, 
                           &localMax, &localSize );

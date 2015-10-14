@@ -18,7 +18,7 @@
 # Change CC, MPICC and the corresponding flags to match your own compiler in
 # file "Makefile.in". You should not have to edit this file at all.
 #
-# v1.3 (2014-12-17)  Carlos Rosales Fernandez
+# v1.4 (2015-10-13)  Carlos Rosales Fernandez
 
 include ./Makefile.in
 
@@ -80,62 +80,62 @@ logs:
 
 blas-build:
 # Floating Point Test Codes
-	@echo "Generating BLAS tests..."          |  tee -a $(BUILD_LOG)
-	@$(MAKE) --directory=`pwd`/src/blas all   |& tee -a $(BUILD_LOG)
-	@echo                                     |  tee -a $(BUILD_LOG)
+	@echo "Generating BLAS tests..."               |  tee -a $(BUILD_LOG)
+	@$(MAKE) --directory=`pwd`/src/blas all   2>&1 | tee -a $(BUILD_LOG)
+	@echo                                          |  tee -a $(BUILD_LOG)
 
 blas-raw-install:
 # Floating Point Test Install
-	@echo "Installing BLAS test executables..." |  tee -a $(INSTALL_LOG)
-	@$(MAKE) --directory=`pwd`/src/blas install |& tee -a $(INSTALL_LOG)
-	@echo                                       |  tee -a $(INSTALL_LOG)
+	@echo "Installing BLAS test executables..."      |  tee -a $(INSTALL_LOG)
+	@$(MAKE) --directory=`pwd`/src/blas install 2>&1 | tee -a $(INSTALL_LOG)
+	@echo                                            |  tee -a $(INSTALL_LOG)
 
 mpi-build:
 # MPI Test Codes
-	@echo "Generating MPI tests..."           |  tee -a $(BUILD_LOG)
-	@$(MAKE) --directory=`pwd`/src/mpi all    |& tee -a $(BUILD_LOG)
-	@echo                                     |  tee -a $(BUILD_LOG)
+	@echo "Generating MPI tests..."                |  tee -a $(BUILD_LOG)
+	@$(MAKE) --directory=`pwd`/src/mpi all    2>&1 | tee -a $(BUILD_LOG)
+	@echo                                          |  tee -a $(BUILD_LOG)
 
 mpi3-build:
 # MPI-3.0 Test Codes
-	@echo "Generating MPI-3.0 tests..."         |  tee -a $(BUILD_LOG)
-	@$(MAKE) --directory=`pwd`/src/mpi/mpi3 all |& tee -a $(BUILD_LOG)
-	@echo                                       |  tee -a $(BUILD_LOG)
+	@echo "Generating MPI-3.0 tests..."              |  tee -a $(BUILD_LOG)
+	@$(MAKE) --directory=`pwd`/src/mpi/mpi3 all 2>&1 | tee -a $(BUILD_LOG)
+	@echo                                            |  tee -a $(BUILD_LOG)
 
 mpi-raw-install:
 # MPI Test Install
-	@echo "Installing MPI test executables..." |  tee -a $(INSTALL_LOG)
-	@$(MAKE) --directory=`pwd`/src/mpi install |& tee -a $(INSTALL_LOG)
-	@echo                                      |  tee -a $(INSTALL_LOG)
+	@echo "Installing MPI test executables..."      |  tee -a $(INSTALL_LOG)
+	@$(MAKE) --directory=`pwd`/src/mpi install 2>&1 | tee -a $(INSTALL_LOG)
+	@echo                                           |  tee -a $(INSTALL_LOG)
 	
 mpi3-raw-install:
 # MPI Test Install
-	@echo "Installing MPI-3.0 test executables..."  |  tee -a $(INSTALL_LOG)
-	@$(MAKE) --directory=`pwd`/src/mpi/mpi3 install |& tee -a $(INSTALL_LOG)
-	@echo                                           |  tee -a $(INSTALL_LOG)
+	@echo "Installing MPI-3.0 test executables..."       |  tee -a $(INSTALL_LOG)
+	@$(MAKE) --directory=`pwd`/src/mpi/mpi3 install 2>&1 | tee -a $(INSTALL_LOG)
+	@echo                                                |  tee -a $(INSTALL_LOG)
 
 gpu-build:
 # GPU Test Codes
-	@echo "Generating GPU specific tests..." |  tee -a $(BUILD_LOG)
-	@$(MAKE) --directory=`pwd`/src/gpu all   |& tee -a $(BUILD_LOG)
-	@echo                                    |  tee -a $(BUILD_LOG)
+	@echo "Generating GPU specific tests..."      |  tee -a $(BUILD_LOG)
+	@$(MAKE) --directory=`pwd`/src/gpu all   2>&1 | tee -a $(BUILD_LOG)
+	@echo                                         |  tee -a $(BUILD_LOG)
 
 gpu-raw-install:
 # GPU Test Install
-	@echo "Installing GPU specific test executables..." |  tee -a $(INSTALL_LOG)
-	@$(MAKE) --directory=`pwd`/src/gpu install          |& tee -a $(INSTALL_LOG)
+	@echo "Installing GPU specific test executables..."      |  tee -a $(INSTALL_LOG)
+	@$(MAKE) --directory=`pwd`/src/gpu install          2>&1 | tee -a $(INSTALL_LOG)
 	@echo  
 
 phi-build:
 # Phi Test Codes
-	@echo "Generating Phi specific tests..." |  tee -a $(BUILD_LOG)
-	@$(MAKE) --directory=`pwd`/src/phi all   |& tee -a $(BUILD_LOG)
-	@echo                                    |  tee -a $(BUILD_LOG)
+	@echo "Generating Phi specific tests..."      |  tee -a $(BUILD_LOG)
+	@$(MAKE) --directory=`pwd`/src/phi all   2>&1 | tee -a $(BUILD_LOG)
+	@echo                                         |  tee -a $(BUILD_LOG)
 
 phi-raw-install:
 # Phi Test Install
-	@echo "Installing Phi specific test executables..." |  tee -a $(INSTALL_LOG)
-	@$(MAKE) --directory=`pwd`/src/phi install          |& tee -a $(INSTALL_LOG)
+	@echo "Installing Phi specific test executables..."      |  tee -a $(INSTALL_LOG)
+	@$(MAKE) --directory=`pwd`/src/phi install          2>&1 | tee -a $(INSTALL_LOG)
 	@echo  
 
 clean:
