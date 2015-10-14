@@ -1,9 +1,9 @@
 /*==============================================================================
  * File     : aux.h
- * Revision : 1.3 (2014-12-17)
+ * Revision : 1.5 (2015-10-14)
  * Author   : Carlos Rosales Fernandez [carlos.rosales.fernandez(at)gmail.com]
  *==============================================================================
- * Copyright 2014 Carlos Rosales Fernandez and The University of Texas at Austin
+ * Copyright 2015 Carlos Rosales Fernandez and The University of Texas at Austin
  *
  * This code was originally written with support from the National Science 
  * Foundation under Grant #OCI-1134872
@@ -23,7 +23,7 @@
  *============================================================================*/
 
 // PAW version number
-#define version "1.3"
+#define version "1.5"
 
 // Some useful strings
 #define bar   "=================================\n"
@@ -33,7 +33,7 @@
 #define sbw   "#\n# SIZE(B)\t\tAVG(MB/s)\t\t\tMIN(MB/s)\t\t\tMAX(MB/s)\t\tstdDev(MB/s)\t\tNLOOP\tNREPS\n"
 #define smpi  "#\n# SIZE(B)\t\tAVG(us)\t\t\t\tMIN(us)\t\t\t\tMAX(us)\t\t\tstdDev(us)\t\t\tNLOOP\tNREPS\n"
 #define srate "#\n# SIZE(B)\t\tAVG(MIO/s)\t\t\tMIN(MIO/s)\t\t\tMAX(MIO/s)\t\tstdDev(MIO/s)\t\tNLOOP\tNREPS\n"
-#define sver  "# PAW - Performance Assessment Workbench v1.3\n#\n"
+#define sver  "# PAW - Performance Assessment Workbench v1.5\n#\n"
 #define sauth "# Carlos Rosales-Fernandez\n"
 #define smail "# carlos.rosales.fernandez@gmail.com\n"
 
