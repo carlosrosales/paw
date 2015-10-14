@@ -1,6 +1,6 @@
 /*==============================================================================
  * Program  : col_allreduce
- * Revision : 1.4 (2015-10-13)
+ * Revision : 1.5 (2015-10-14)
  * Author   : Carlos Rosales Fernandez [carlos.rosales.fernandez(at)gmail.com]
  *==============================================================================
  * Copyright 2014 Carlos Rosales Fernandez and The University of Texas at Austin
