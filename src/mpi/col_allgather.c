@@ -33,9 +33,9 @@
 
 int main(int argc, char **argv)
 {
-    FILE   *fp, *fp2;
-    char   testName[32] = "MPI_Allgather", file1[64], file2[64];
-    int    dblSize, proc, nprocs;
+    FILE   *fp, *fp2, *pipe;
+    char   testName[32] = "MPI_Allgather", file1[64], file2[64], pipeStr[8];
+    int    dblSize, proc, nprocs, nodeCPUs, nodes;
     unsigned int i, j, size, localSize, NLOOP = NLOOP_MAX;
     unsigned int smin = MIN_COL_SIZE, smed = MED_COL_SIZE, smax = MAX_COL_SIZE;
     double tScale = USEC, bwScale = MB;
@@ -44,11 +44,19 @@ int main(int argc, char **argv)
     double tElapsed[NREPS], tElapsedGlobal[NREPS];
     double *A, *B;
 
+    pipe = popen( "cat /proc/cpuinfo | grep processor | wc -l", "r" );
+    fgets( tmpStr, 8, pipe ); pclose(pipe);
+    nodeCPUs = atoi(tmpStr);
 
     // Initialize parallel environment
     MPI_Init( &argc, &argv );
     MPI_Comm_size( MPI_COMM_WORLD, &nprocs );
     MPI_Comm_rank( MPI_COMM_WORLD, &proc );
+
+    // Reset maximum message size to fit within node memory
+    nodes = nprocs / nodeCPUs;
+    if( smax > nodes ) smax = smax / nodes;
+    if( smed > nodes ) smed = smed / nodes;
 
     // Check for user defined limits
     checkEnvCOL( proc, &NLOOP, &smin, &smed, &smax );
