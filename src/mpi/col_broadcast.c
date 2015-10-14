@@ -1,6 +1,6 @@
 /*==============================================================================
  * Program  : col_broadcast
- * Revision : 1.3 (2014-12-17)
+ * Revision : 1.4 (2015-10-13)
  * Author   : Carlos Rosales Fernandez [carlos.rosales.fernandez(at)gmail.com]
  *==============================================================================
  * Copyright 2014 Carlos Rosales Fernandez and The University of Texas at Austin
@@ -114,8 +114,8 @@ int main(int argc, char **argv)
         if( proc == 0 ){
             // sizeBytes is size to write to file
             // msgBytes is actual data exchanged on the wire
-            msgBytes  = (double)(size*dblSize);
-            sizeBytes = (double)(size*dblSize);
+            msgBytes  = (double)size*(double)dblSize;
+            sizeBytes = (double)size*(double)dblSize;
             post_process( fp, fp2, threshold_hi, tElapsedGlobal, tScale, 
                           bwScale, size*dblSize, sizeBytes, msgBytes, &NLOOP, 
                           &localMax, &localSize );

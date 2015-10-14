@@ -1,6 +1,6 @@
 /*==============================================================================
  * File     : aux_mpi.c
- * Revision : 1.3 (2014-12-17)
+ * Revision : 1.4 (2015-10-13)
  * Author   : Carlos Rosales Fernandez [carlos.rosales.fernandez(at)gmail.com]
  *==============================================================================
  * Copyright 2014 Carlos Rosales Fernandez and The University of Texas at Austin
@@ -22,6 +22,7 @@
  * Auxiliary MPI functions for PAW: error handling, input parsing
  *============================================================================*/
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
