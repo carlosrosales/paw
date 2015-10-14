@@ -73,7 +73,7 @@
 \verb+ +
 \vspace{1em}
 \begin{flushright}
-\huge\bf PAW v1.3\\
+\huge\bf PAW v1.5\\
 \rule{\textwidth}{4pt}
 \large{\bf Performance Assessment Workbench User Guide\\
 Document Revision 1.0\\
@@ -91,13 +91,13 @@ High Performance Computing \\
 Texas Advanced Computing Center\\
 The University of Texas at Austin\\
 \vspace{1cm}
-Copyright 2014 Carlos Rosales Fern\'andez and the University of Texas at Austin.
+Copyright 2015 Carlos Rosales Fern\'andez and the University of Texas at Austin.
 \end{flushleft}
 \newpage
 \end{titlepage}
 
 \begin{abstract}
-The Performance Assessment Workbench (PAW) is an Open Source suite of microbenchmarks designed with simplicity and reliability in mind. This User Guide documents the implementation details and the general usage for all components of PAW. As of version 1.3 the suite contains code designed to test:
+The Performance Assessment Workbench (PAW) is an Open Source suite of microbenchmarks designed with simplicity and reliability in mind. This User Guide documents the implementation details and the general usage for all components of PAW. As of version 1.5 the suite contains code designed to test:
 
 \begin{itemize}
 \item BLAS floating point performance in CPUs, GPUs and Xeon Phi
@@ -116,7 +116,7 @@ Throughout the text we have used text boxes to highlight important information. 
 
 Our intention is to create a set of simple benchmark implementations that are transparent to use and understand. The hope is that users of this set of tools will actually look at the code implementation and understand exactly what is being measured, without having to peel off multiple layers of obfuscating code. We have made an effort to write simple, reliable, and thoroughly commented C code, but we are well aware that documentation is never perfect or complete. We welcome all feedback. Feedback that includes suggestions for improvement in the usability, reliability, and accuracy of these benchmarks is particularly welcome. 
 
-Version 1.3 is a feature release which adds MPI-3.0 point to point tests to the benchmark suite.
+Version 1.5 is a feature release which adds dynamic payload modification to collective tests to avoid running nodes out for memory when executing the benchmarks on large scale systems.
 \end{abstract}
 
 \tableofcontents
@@ -124,13 +124,13 @@ Version 1.3 is a feature release which adds MPI-3.0 point to point tests to the 
 \chapter{Installation}
 The Performance Analysis Workbench is simple to install. In order to use all of its features you will need GNU Make and a C compiler. In order to test GPU performance you will also need the CUDA compiler and CUBLAS linear algebra libraries. If testing the Xeon Phi you will also need a compiler and with support for offload to the Xeon Phi.
 
-First of all obtain the latest version tarball, currently paw-1.3.tar.gz, and expand it in a convenient location in your system:
+First of all obtain the latest version tarball, currently paw-1.5.tar.gz, and expand it in a convenient location in your system:
 
 \begin{verbatim}
-    tar xzvf ./paw-1.3.tar.gz
+    tar xzvf ./paw-1.5.tar.gz
 \end{verbatim}
 
-This will create a top level directory called \verb+paw-1.3+, with subdirectories \verb+/bin+, \verb+/doc+, and \verb+/src+. Inside the source directory you will also find separate subdirectories for common functions (\verb+aux+) and the floating point (\verb+/blas+), MPI (\verb+/mpi+), GPU (\verb+/gpu+) and Xeon Phi (\verb+/phi+) benchmarking tools.
+This will create a top level directory called \verb+paw-1.5+, with subdirectories \verb+/bin+, \verb+/doc+, and \verb+/src+. Inside the source directory you will also find separate subdirectories for common functions (\verb+aux+) and the floating point (\verb+/blas+), MPI (\verb+/mpi+), GPU (\verb+/gpu+) and Xeon Phi (\verb+/phi+) benchmarking tools.
 
 Change directory to the top level of PAW and edit \verb+Makefile.in+ to reflect your compiler and library locations. A default template is provided that uses the Intel compiler, the Intel MKL BLAS libraries, the Mvapich2 MPI libraries and NVIDIA's nvcc compiler.
 
