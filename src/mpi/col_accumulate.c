@@ -171,7 +171,7 @@ int main(int argc, char **argv)
             // sizeBytes is size to write to file
             // msgBytes is actual data exchanged on the wire
             msgBytes  = (double)size*(double)(nprocs-1)*(double)dblSize;
-            sizeBytes = (double)size*(double)dblSize);
+            sizeBytes = (double)size*(double)dblSize;
             post_process( fp, fp2, threshold_hi, tElapsedGlobal, tScale, 
                           bwScale, size*dblSize, sizeBytes, msgBytes, &NLOOP, 
                           &localMax, &localSize );
