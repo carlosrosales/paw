@@ -55,9 +55,11 @@ int main(int argc, char **argv)
     MPI_Comm_rank( MPI_COMM_WORLD, &proc );
 
     // Reset maximum message size to fit within node memory
-    nodes = nprocs / nodeCPUs;
-    if( smax > nodes ) smax = smax / nodes;
-    if( smed > nodes ) smed = smed / nodes;
+    if( nprocs > nodeCPUs ){
+        nodes = nprocs / nodeCPUs;
+        if( smax > nodes ) smax = smax / nodes;
+        if( smed > nodes ) smed = smed / nodes;
+    }
 
     // Check for user defined limits
     checkEnvCOL( proc, &NLOOP, &smin, &smed, &smax );
