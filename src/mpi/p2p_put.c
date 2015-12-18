@@ -34,7 +34,7 @@
 int main(int argc, char **argv)
 {
     FILE   *fp, *fp2;
-    char   testName[32] = "MPI_Get", file1[64], file2[64];
+    char   testName[32] = "MPI_Put", file1[64], file2[64];
     int    dblSize, proc, nprocs, npairs, partner;
     unsigned int i, j, k, size, localSize, NLOOP = NLOOP_MAX;
     unsigned int smin = MIN_P2P_SIZE, smed = MED_P2P_SIZE, smax = MAX_P2P_SIZE;
