@@ -1,5 +1,5 @@
 # Makefile for PAW MPI tests
-# v1.4 (2015-10-13) Carlos Rosales-Fernandez
+# v1.3 (2014-12-17) Carlos Rosales-Fernandez
 #------------------------------------------------------------------------------
 # Copyright 2014 Carlos Rosales Fernandez and The University of Texas at Austin
 #
@@ -28,10 +28,12 @@ SRCS = ../aux/aux.c ../aux/aux.h ../aux/constants.h ../aux/aux_mpi.c ../aux/aux_
 # Build options
 all: col_agtr col_a2a col_ardc col_bct col_gtr col_rdc col_sct col_acc col_acc_fence  \
      p2p_get p2p_isend p2p_put p2p_send p2p_isend_bidir p2p_isend_ping p2p_get_fence  \
-     p2p_put_fence p2p_mrate p2p_mrate_bidir latency
+     p2p_put_fence p2p_mrate p2p_mrate_bidir latency col_init col_init_th
 
 # Linking Stage
 latency         : $(OBJS) latency.o;              $(MPICC) $(LFLAGS) $(OBJS) latency.o               -o latency$(BIN_SUFFIX)
+col_init        : $(OBJS) col_init.o;             $(MPICC) $(LFLAGS) $(OBJS) col_init.o              -o col_init$(BIN_SUFFIX)
+col_init_th     : $(OBJS) col_init_th.o;          $(MPICC) $(LFLAGS) $(OBJS) col_init_th.o           -o col_init_th$(BIN_SUFFIX)
 col_acc         : $(OBJS) col_accumulate.o;       $(MPICC) $(LFLAGS) $(OBJS) col_accumulate.o        -o col_acc$(BIN_SUFFIX)
 col_acc_fence   : $(OBJS) col_accumulate_fence.o; $(MPICC) $(LFLAGS) $(OBJS) col_accumulate_fence.o  -o col_acc_fence$(BIN_SUFFIX)
 col_agtr        : $(OBJS) col_allgather.o;   $(MPICC) $(LFLAGS) $(OBJS) col_allgather.o   -o col_agtr$(BIN_SUFFIX)
@@ -57,6 +59,8 @@ p2p_isend_ping  : $(OBJS) p2p_isend_ping.o;  $(MPICC) $(LFLAGS) $(OBJS) p2p_isen
 aux.o            : $(SRCS);                  $(MPICC) $(CFLAGS) ../aux/aux.c
 aux_mpi.o        : $(SRCS);                  $(MPICC) $(CFLAGS) ../aux/aux_mpi.c
 latency.o        : $(SRCS) latency.c;        $(MPICC) $(CFLAGS) latency.c
+col_init.o       : $(SRCS) col_init.c;       $(MPICC) $(CFLAGS) col_init.c
+col_init_th.o    : $(SRCS) col_init_th.c;    $(MPICC) $(CFLAGS) col_init_th.c
 col_accumulate.o       : $(SRCS) col_accumulate.c;       $(MPICC) $(CFLAGS) col_accumulate.c
 col_accumulate_fence.o : $(SRCS) col_accumulate_fence.c; $(MPICC) $(CFLAGS) col_accumulate_fence.c
 col_allgather.o  : $(SRCS) col_allgather.c;  $(MPICC) $(CFLAGS) col_allgather.c
@@ -85,7 +89,7 @@ install:
 	mv -v ./col_acc$(BIN_SUFFIX) ./col_acc_fence$(BIN_SUFFIX) ./p2p_get_fence$(BIN_SUFFIX) ./p2p_put_fence$(BIN_SUFFIX) $(INSTALL_DIR)
 	mv -v ./p2p_get$(BIN_SUFFIX) ./p2p_isend$(BIN_SUFFIX) ./p2p_put$(BIN_SUFFIX) ./p2p_send$(BIN_SUFFIX) $(INSTALL_DIR)
 	mv -v ./p2p_isend_bidir$(BIN_SUFFIX) ./p2p_isend_ping$(BIN_SUFFIX) $(INSTALL_DIR)
-	mv -v ./p2p_mrate$(BIN_SUFFIX) ./p2p_mrate_bidir$(BIN_SUFFIX) $(INSTALL_DIR)
+	mv -v ./p2p_mrate$(BIN_SUFFIX) ./p2p_mrate_bidir$(BIN_SUFFIX) ./col_init$(BIN_SUFFIX) ./col_init_th$(BIN_SUFFIX) $(INSTALL_DIR)
 
 # Clean
 clean:
@@ -98,7 +102,7 @@ clean-all:
 	rm -f ./col_acc$(BIN_SUFFIX) ./col_acc_fence$(BIN_SUFFIX) ./p2p_get_fence$(BIN_SUFFIX) ./p2p_put_fence$(BIN_SUFFIX)
 	rm -f ./p2p_get$(BIN_SUFFIX) ./p2p_isend$(BIN_SUFFIX) ./p2p_put$(BIN_SUFFIX) ./p2p_send$(BIN_SUFFIX)
 	rm -f ./p2p_isend_bidir$(BIN_SUFFIX) ./p2p_isend_ping$(BIN_SUFFIX)
-	rm -f ./p2p_mrate$(BIN_SUFFIX) ./p2p_mrate_bidir$(BIN_SUFFIX) 
+	rm -f ./p2p_mrate$(BIN_SUFFIX) ./p2p_mrate_bidir$(BIN_SUFFIX) ./col_init$(BIN_SUFFIX) ./col_init_th$(BIN_SUFFIX)
 
 
 
