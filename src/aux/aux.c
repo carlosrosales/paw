@@ -381,13 +381,13 @@ int checkEnvBLAS( unsigned int *NLOOP, unsigned int *smin,
         if( atoi( getenv( "MIN_BLAS_SIZE" ) ) <= 0 ) 
             fatalError("MIN_BLAS_SIZE must be a positive integer");
         else
-            *smin = atoi( getenv( "MIN_P2P_SIZE" ) );
+            *smin = atoi( getenv( "MIN_BLAS_SIZE" ) );
     }
     if( getenv( "MED_BLAS_SIZE" ) != NULL ){
         if( atoi( getenv( "MED_BLAS_SIZE" ) ) <= 0 ) 
             fatalError("MED_BLAS_SIZE must be a positive integer");
         else
-            *smed = atoi( getenv( "MED_P2P_SIZE" ) );
+            *smed = atoi( getenv( "MED_BLAS_SIZE" ) );
     }
     if( getenv( "MAX_BLAS_SIZE" ) != NULL ){
         if( atoi( getenv( "MAX_BLAS_SIZE" ) ) <= 0 ) 
