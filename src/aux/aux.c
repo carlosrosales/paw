@@ -377,23 +377,23 @@ int checkEnvBLAS( unsigned int *NLOOP, unsigned int *smin,
         else
             *NLOOP = atoi( getenv( "NLOOP_MAX" ) );
     }
-    if( getenv( "MIN_P2P_SIZE" ) != NULL ){
-        if( atoi( getenv( "MIN_P2P_SIZE" ) ) <= 0 ) 
-            fatalError("MIN_P2P_SIZE must be a positive integer");
+    if( getenv( "MIN_BLAS_SIZE" ) != NULL ){
+        if( atoi( getenv( "MIN_BLAS_SIZE" ) ) <= 0 ) 
+            fatalError("MIN_BLAS_SIZE must be a positive integer");
         else
             *smin = atoi( getenv( "MIN_P2P_SIZE" ) );
     }
-    if( getenv( "MED_P2P_SIZE" ) != NULL ){
-        if( atoi( getenv( "MED_P2P_SIZE" ) ) <= 0 ) 
-            fatalError("MED_P2P_SIZE must be a positive integer");
+    if( getenv( "MED_BLAS_SIZE" ) != NULL ){
+        if( atoi( getenv( "MED_BLAS_SIZE" ) ) <= 0 ) 
+            fatalError("MED_BLAS_SIZE must be a positive integer");
         else
             *smed = atoi( getenv( "MED_P2P_SIZE" ) );
     }
-    if( getenv( "MAX_P2P_SIZE" ) != NULL ){
-        if( atoi( getenv( "MAX_P2P_SIZE" ) ) <= 0 ) 
-            fatalError("MAX_P2P_SIZE must be a positive integer");
+    if( getenv( "MAX_BLAS_SIZE" ) != NULL ){
+        if( atoi( getenv( "MAX_BLAS_SIZE" ) ) <= 0 ) 
+            fatalError("MAX_BLAS_SIZE must be a positive integer");
         else
-            *smax = atoi( getenv( "MAX_P2P_SIZE" ) );
+            *smax = atoi( getenv( "MAX_BLAS_SIZE" ) );
     }
 
     return 0;
@@ -412,19 +412,19 @@ int checkEnvGPU( unsigned int *NLOOP, unsigned int *smin,
     }
     if( getenv( "MIN_GPU_SIZE" ) != NULL ){
     	if( atoi( getenv( "MIN_GPU_SIZE" ) ) <= 0 )
-    		fatalError("MIN_GPU_BLAS_SIZE must be a positive integer");
+    		fatalError("MIN_GPU_SIZE must be a positive integer");
     	else
             *smin = atoi( getenv( "MIN_GPU_SIZE" ) );
     }
     if( getenv( "MED_GPU_SIZE" ) != NULL ){
         if( atoi( getenv( "MED_GPU_SIZE" ) ) <= 0 ) 
-            fatalError("MED_GPU_BLAS_SIZE must be a positive integer");
+            fatalError("MED_GPU_SIZE must be a positive integer");
         else
             *smed = atoi( getenv( "MED_GPU_SIZE" ) );
     }
     if( getenv( "MAX_GPU_SIZE" ) != NULL ){
         if( atoi( getenv( "MAX_GPU_SIZE" ) ) <= 0 ) 
-            fatalError("MAX_GPU_BLAS_SIZE must be a positive integer");
+            fatalError("MAX_GPU_SIZE must be a positive integer");
         else
             *smax = atoi( getenv( "MAX_GPU_SIZE" ) );
     }
@@ -478,19 +478,19 @@ int checkEnvPHI( unsigned int *NLOOP, unsigned int *smin,
     }
     if( getenv( "MIN_PHI_SIZE" ) != NULL  ){
         if( atoi( getenv( "MIN_PHI_SIZE" ) ) <= 0 ) 
-            fatalError("MIN_P2P_SIZE must be a positive integer");
+            fatalError("MIN_PHI_SIZE must be a positive integer");
         else
             *smin = atoi( getenv( "MIN_PHI_SIZE" ) );
     }
     if( getenv( "MED_PHI_SIZE" ) != NULL  ){
         if( atoi( getenv( "MED_PHI_SIZE" ) ) <= 0 ) 
-            fatalError("MED_P2P_SIZE must be a positive integer");
+            fatalError("MED_PHI_SIZE must be a positive integer");
         else
             *smed = atoi( getenv( "MED_PHI_SIZE" ) );
     }
     if( getenv( "MAX_PHI_SIZE" ) != NULL  ){
         if( atoi( getenv( "MAX_PHI_SIZE" ) ) <= 0 ) 
-            fatalError("MAX_P2P_SIZE must be a positive integer");
+            fatalError("MAX_PHI_SIZE must be a positive integer");
         else
             *smax = atoi( getenv( "MAX_PHI_SIZE" ) );
     }
