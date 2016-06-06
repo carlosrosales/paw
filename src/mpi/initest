@@ -3,23 +3,24 @@
 # Simple script to measure max and avg MPI startup time
 # for a set of tasks
 #
+
 MPI_LAUNCHER=mpiexec.hydra
 
 for tasks in 2 4 8 16 32 64 128 192 256; do
 	echo "Timing MPI Startup for ${tasks} Tasks ..." 
 	for reps in 1 2 3; do
-		${MPI_LAUNCHER} -np $tasks ./col_init >> time_init_${tasks}.txt
-		${MPI_LAUNCHER} -np $tasks ./col_init_th >> time_init_th_${tasks}.txt
+		${MPI_LAUNCHER} -np $tasks ./col_init >> time_init_${tasks}.dat
+		${MPI_LAUNCHER} -np $tasks ./col_init_th >> time_init_th_${tasks}.dat
 	done
 done
 
 rm -f ./time_init.txt
 rm -f ./time_init_th.txt
-printf "#PROCS\tMAX\t\tAVG\n"  > time_init.txt
-printf "#PROCS\tMAX\t\tAVG\n"  > time_init_th.txt
+printf "#PROCS\tMAX\t\tAVG\n"  > time_init.dat
+printf "#PROCS\tMAX\t\tAVG\n"  > time_init_th.dat
 for tasks in 2 4 8 16 32 64 128 192 256; do
 	# Max and avg startup time
-        awk ' NR == 1 {max=$2; min=$2} {avg+=$2} NR > 1 && $2 > max {max=$2} END { printf $1 "\t%e\t%e\n",max,avg/NR }' ./time_init_${tasks}.txt >> time_init.txt
-        awk ' NR == 1 {max=$2; min=$2} {avg+=$2} NR > 1 && $2 > max {max=$2} END { printf $1 "\t%e\t%e\n",max,avg/NR }' ./time_init_th_${tasks}.txt >> time_init_th.txt
+        awk ' NR == 1 {max=$2; min=$2} {avg+=$2} NR > 1 && $2 > max {max=$2} END { printf $1 "\t%e\t%e\n",max,avg/NR }' ./time_init_${tasks}.dat >> time_init.dat
+        awk ' NR == 1 {max=$2; min=$2} {avg+=$2} NR > 1 && $2 > max {max=$2} END { printf $1 "\t%e\t%e\n",max,avg/NR }' ./time_init_th_${tasks}.dat >> time_init_th.dat
 done
 
