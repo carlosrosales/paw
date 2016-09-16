@@ -1,6 +1,6 @@
 /*==============================================================================
  * Program  : col_accumulate
- * Revision : 1.4 (2015-10-13)
+ * Revision : 1.6 (2016-09-16)
  * Author   : Carlos Rosales Fernandez [carlos.rosales.fernandez(at)gmail.com]
  *==============================================================================
  * Copyright 2014 Carlos Rosales Fernandez and The University of Texas at Austin
@@ -39,7 +39,7 @@ int main(int argc, char **argv)
     unsigned int i, j, k, size, localSize, target, NLOOP = NLOOP_MAX;
     unsigned int smin = MIN_COL_SIZE, smed = MED_COL_SIZE, smax = MAX_COL_SIZE;
     unsigned int *origin;
-    double  tScale = USEC, bwScale = MB;
+    double  tScale = USEC, bwScale = MB_8;
     double  tStart, timeMin, timeMinGlobal, overhead, threshold_lo, threshold_hi;
     double  msgBytes, sizeBytes, localMax, UsedMem;
     double  tElapsed[NREPS], tElapsedGlobal[NREPS];

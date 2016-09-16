@@ -1,6 +1,6 @@
 /*==============================================================================
  * Program  : p2p_put
- * Revision : 1.4 (2015-10-13)
+ * Revision : 1.6 (2016-09-16)
  * Author   : Carlos Rosales Fernandez [carlos.rosales.fernandez(at)gmail.com]
  *==============================================================================
  * Copyright 2014 Carlos Rosales Fernandez and The University of Texas at Austin
@@ -38,7 +38,7 @@ int main(int argc, char **argv)
     int    dblSize, proc, nprocs, npairs, partner;
     unsigned int i, j, k, size, localSize, NLOOP = NLOOP_MAX;
     unsigned int smin = MIN_P2P_SIZE, smed = MED_P2P_SIZE, smax = MAX_P2P_SIZE;
-    double tScale = USEC, bwScale = MB;
+    double tScale = USEC, bwScale = MB_8;
     double tStart, timeMin, timeMinGlobal, overhead, threshold_lo, threshold_hi;
     double msgBytes, sizeBytes, localMax, UsedMem;
     double tElapsed[NREPS], tElapsedGlobal[NREPS];

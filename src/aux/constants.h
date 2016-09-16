@@ -1,9 +1,9 @@
 /*==============================================================================
  * File     : aux.h
- * Revision : 1.5 (2015-10-14)
+ * Revision : 1.6 (2016-09-16)
  * Author   : Carlos Rosales Fernandez [carlos.rosales.fernandez(at)gmail.com]
  *==============================================================================
- * Copyright 2015 Carlos Rosales Fernandez and The University of Texas at Austin
+ * Copyright 2016 Carlos Rosales Fernandez and The University of Texas at Austin
  *
  * This code was originally written with support from the National Science 
  * Foundation under Grant #OCI-1134872
@@ -23,7 +23,7 @@
  *============================================================================*/
 
 // PAW version number
-#define version "1.5"
+#define version "1.6"
 
 // Some useful strings
 #define bar   "=================================\n"
@@ -33,7 +33,7 @@
 #define sbw   "#\n# SIZE(B)\t\tAVG(MB/s)\t\t\tMIN(MB/s)\t\t\tMAX(MB/s)\t\tstdDev(MB/s)\t\tNLOOP\tNREPS\n"
 #define smpi  "#\n# SIZE(B)\t\tAVG(us)\t\t\t\tMIN(us)\t\t\t\tMAX(us)\t\t\tstdDev(us)\t\t\tNLOOP\tNREPS\n"
 #define srate "#\n# SIZE(B)\t\tAVG(MIO/s)\t\t\tMIN(MIO/s)\t\t\tMAX(MIO/s)\t\tstdDev(MIO/s)\t\tNLOOP\tNREPS\n"
-#define sver  "# PAW - Performance Assessment Workbench v1.5\n#\n"
+#define sver  "# PAW - Performance Assessment Workbench v1.6\n#\n"
 #define sauth "# Carlos Rosales-Fernandez\n"
 #define smail "# carlos.rosales.fernandez@gmail.com\n"
 
@@ -81,7 +81,7 @@
 // Note that the memory required by that test is ( 8 * 3 * NDGEMM * NDGEMM )
 #define MIN_BLAS_SIZE 8
 #define MED_BLAS_SIZE 1024
-#define MAX_BLAS_SIZE 10000
+#define MAX_BLAS_SIZE 9000
 
 // Message sizes for Point To Point Bandwidth calculation
 // This is a linear size, it will by X(sizeofDouble) in bytes

@@ -1,6 +1,6 @@
 #!/bin/sh
 #------------------------------------------------------------------------------
-# Copyright 2014 Carlos Rosales Fernandez and The University of Texas at Austin
+# Copyright 2016 Carlos Rosales Fernandez and The University of Texas at Austin
 #
 # This file is part of the Performance Assessment Workbench (PAW).
 # PAW is free software: you can redistribute it and/or modify it under the
@@ -18,11 +18,11 @@
 # Change CC, MPICC and the corresponding flags to match your own compiler in
 # file "Makefile.in". You should not have to edit this file at all.
 #
-# v1.4 (2015-10-13)  Carlos Rosales Fernandez
+# v1.6 (2016-09-16)  Carlos Rosales Fernandez
 
 include ./Makefile.in
 
-COPYRIGHT1="Copyright 2014 The University of Texas at Austin."
+COPYRIGHT1="Copyright 2016 The University of Texas at Austin."
 COPYRIGHT2="License: GNU GPL version 2 <http://gnu.org/licenses/gpl.html>"
 COPYRIGHT3="This is free software: you are free to change and redistribute it."
 COPYRIGHT4="There is NO WARRANTY, to the extent permitted by law."
@@ -32,11 +32,12 @@ INSTALL_LOG="`pwd`/paw_install.log"
 
 SEPARATOR="======================================================================"
 PKG      ="Package  : PAW"
-VER      ="Version  : 1.3"
+VER      ="Version  : 1.6"
 DATE     ="Date     : `date +%Y.%m.%d`"
 SYSTEM   ="System   : `uname -sr`"
 COMPILER ="Compiler : `$(CC) --version | head -n 1`"
 
+core: logs blas-core-build mpi-core-build stream-core-build
 paw:  logs blas-build mpi-build check-build
 all:  logs blas-build mpi-build gpu-build phi-build check-build
 blas: logs blas-build check-build
@@ -46,6 +47,7 @@ gpu:  logs gpu-build check-build
 phi:  logs phi-build check-build
 
 install:      blas-raw-install mpi-raw-install check-install
+core-install: blase-core-install mpi-core-install stream-core-install check-install
 all-install:  blas-raw-install mpi-raw-install gpu-raw-install phi-raw-install check-install
 blas-install: blas-raw-install check-install
 mpi-install:  mpi-raw-install check-install
@@ -78,6 +80,18 @@ logs:
 	@echo "Working Directory : `pwd`"           | tee -a $(BUILD_LOG)
 	@echo                                       | tee -a $(BUILD_LOG)
 
+blas-core-build:
+# Core Floating Point Test Codes
+	@echo "Generating core BLAS test..."            | tee -a $(BUILD_LOG)
+	@$(MAKE) --directory=`pwd`/src/blas core   2>&1 | tee -a $(BUILD_LOG)
+	@echo
+
+blas-core-install:
+# Core Floating Point Test Install
+	@echo "Installing core BLAS test executable..."       |  tee -a $(INSTALL_LOG)
+	@$(MAKE) --directory=`pwd`/src/blas core-install 2>&1 | tee -a $(INSTALL_LOG)
+	@echo   
+
 blas-build:
 # Floating Point Test Codes
 	@echo "Generating BLAS tests..."               |  tee -a $(BUILD_LOG)
@@ -96,18 +110,30 @@ mpi-build:
 	@$(MAKE) --directory=`pwd`/src/mpi all    2>&1 | tee -a $(BUILD_LOG)
 	@echo                                          |  tee -a $(BUILD_LOG)
 
+mpi-raw-install:
+# MPI Test Install
+	@echo "Installing MPI test executables..."      |  tee -a $(INSTALL_LOG)
+	@$(MAKE) --directory=`pwd`/src/mpi install 2>&1 | tee -a $(INSTALL_LOG)
+	@echo                                           |  tee -a $(INSTALL_LOG)
+
+mpi-core-build:
+# Core MPI Test Codes
+	@echo "Generating core MPI tests..."            |  tee -a $(BUILD_LOG)
+	@$(MAKE) --directory=`pwd`/src/mpi core    2>&1 | tee -a $(BUILD_LOG)
+	@echo                                           |  tee -a $(INSTALL_LOG)
+
+mpi-core-install:
+# Core MPI Test Install
+	@echo "Installing core MPI test executables..."      |  tee -a $(INSTALL_LOG)
+	@$(MAKE) --directory=`pwd`/src/mpi base-install 2>&1 | tee -a $(INSTALL_LOG)
+	@echo                                                |  tee -a $(INSTALL_LOG)
+
 mpi3-build:
 # MPI-3.0 Test Codes
 	@echo "Generating MPI-3.0 tests..."              |  tee -a $(BUILD_LOG)
 	@$(MAKE) --directory=`pwd`/src/mpi/mpi3 all 2>&1 | tee -a $(BUILD_LOG)
 	@echo                                            |  tee -a $(BUILD_LOG)
 
-mpi-raw-install:
-# MPI Test Install
-	@echo "Installing MPI test executables..."      |  tee -a $(INSTALL_LOG)
-	@$(MAKE) --directory=`pwd`/src/mpi install 2>&1 | tee -a $(INSTALL_LOG)
-	@echo                                           |  tee -a $(INSTALL_LOG)
-	
 mpi3-raw-install:
 # MPI Test Install
 	@echo "Installing MPI-3.0 test executables..."       |  tee -a $(INSTALL_LOG)
@@ -136,7 +162,20 @@ phi-raw-install:
 # Phi Test Install
 	@echo "Installing Phi specific test executables..."      |  tee -a $(INSTALL_LOG)
 	@$(MAKE) --directory=`pwd`/src/phi install          2>&1 | tee -a $(INSTALL_LOG)
-	@echo  
+	@echo                                                    |  tee -a $(INSTALL_LOG)
+
+stream-core-build:
+	@echo "Generating core STREAM test..."                          |  tee -a $(BUILD_LOG)
+	@cd extras                                                 2>&1 | tee -a $(BUILD_LOG)
+	@tar xzvf ./stream-5.10.tar.gz                             2>&1 | tee -a $(BUILD_LOG)
+	@cd ./stream-5.10                                          2>&1 | tee -a $(BUILD_LOG)
+	@$(CC) -O2 $(OMP_FLAGS) $(ARCH_FLAGS) ./stream.c -o stream 2>&1 | tee -a $(BUILD_LOG)
+	@echo                                                           |  tee -a $(BUILD_LOG)
+
+stream-core-install:
+	@echo "Installing core STREAM test executable..."      |  tee -a $(INSTALL_LOG)
+	@mv -v ./extras/stream-5.10/stream $(INSTALL_DIR) 2>&1 |  tee -a $(INSTALL_LOG)
+	@echo                                                  |  tee -a $(INSTALL_LOG)
 
 clean:
 # Cleanup all directories
@@ -145,6 +184,8 @@ clean:
 	@$(MAKE) --directory=`pwd`/src/mpi/mpi3 clean
 	@$(MAKE) --directory=`pwd`/src/gpu clean
 	@$(MAKE) --directory=`pwd`/src/phi clean
+	@rm -f ./extras/*.o
+
 
 distclean:
 # Cleanup all directories and binaries

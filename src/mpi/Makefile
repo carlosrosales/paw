@@ -1,7 +1,7 @@
 # Makefile for PAW MPI tests
-# v1.3 (2014-12-17) Carlos Rosales-Fernandez
+# v1.6 (2016-09-16) Carlos Rosales-Fernandez
 #------------------------------------------------------------------------------
-# Copyright 2014 Carlos Rosales Fernandez and The University of Texas at Austin
+# Copyright 2016 Carlos Rosales Fernandez and The University of Texas at Austin
 #
 # This file is part of the Performance Assessment Workbench (PAW).
 # PAW is free software: you can redistribute it and/or modify it under the
@@ -26,9 +26,10 @@ OBJS = aux.o aux_mpi.o
 SRCS = ../aux/aux.c ../aux/aux.h ../aux/constants.h ../aux/aux_mpi.c ../aux/aux_mpi.h
 
 # Build options
+core: p2p_multitask latency
 all: col_agtr col_a2a col_ardc col_bct col_gtr col_rdc col_sct col_acc col_acc_fence  \
      p2p_get p2p_isend p2p_put p2p_send p2p_isend_bidir p2p_isend_ping p2p_get_fence  \
-     p2p_put_fence p2p_mrate p2p_mrate_bidir latency col_init col_init_th
+     p2p_put_fence p2p_mrate p2p_mrate_bidir p2p_multitask latency col_init col_init_th
 
 # Linking Stage
 latency         : $(OBJS) latency.o;              $(MPICC) $(LFLAGS) $(OBJS) latency.o               -o latency$(BIN_SUFFIX)
@@ -51,6 +52,7 @@ p2p_put_fence   : $(OBJS) p2p_put_fence.o;   $(MPICC) $(LFLAGS) $(OBJS) p2p_put_
 p2p_send        : $(OBJS) p2p_send.o;        $(MPICC) $(LFLAGS) $(OBJS) p2p_send.o        -o p2p_send$(BIN_SUFFIX)
 p2p_mrate       : $(OBJS) p2p_mrate.o;       $(MPICC) $(LFLAGS) $(OBJS) p2p_mrate.o       -o p2p_mrate$(BIN_SUFFIX)
 p2p_mrate_bidir : $(OBJS) p2p_mrate_bidir.o; $(MPICC) $(LFLAGS) $(OBJS) p2p_mrate_bidir.o -o p2p_mrate_bidir$(BIN_SUFFIX)
+p2p_multitask   : $(OBJS) p2p_multitask.o;   $(MPICC) $(LFLAGS) $(OBJS) p2p_multitask.o   -o p2p_multitask$(BIN_SUFFIX)
 p2p_isend_bidir : $(OBJS) p2p_isend_bidir.o; $(MPICC) $(LFLAGS) $(OBJS) p2p_isend_bidir.o -o p2p_isend_bidir$(BIN_SUFFIX)
 p2p_isend_ping  : $(OBJS) p2p_isend_ping.o;  $(MPICC) $(LFLAGS) $(OBJS) p2p_isend_ping.o  -o p2p_isend_ping$(BIN_SUFFIX)
 
@@ -78,22 +80,32 @@ p2p_put_fence.o  : $(SRCS) p2p_put_fence.c;  $(MPICC) $(CFLAGS) p2p_put_fence.c
 p2p_send.o       : $(SRCS) p2p_send.c;       $(MPICC) $(CFLAGS) p2p_send.c
 p2p_mrate.o      : $(SRCS) p2p_mrate.c;      $(MPICC) $(CFLAGS) p2p_mrate.c
 p2p_mrate_bidir.o : $(SRCS) p2p_mrate_bidir.c; $(MPICC) $(CFLAGS) p2p_mrate_bidir.c
+p2p_multitask.o   : $(SRCS) p2p_multitask.c;   $(MPICC) $(CFLAGS) p2p_multitask.c
 p2p_isend_bidir.o : $(SRCS) p2p_isend_bidir.c; $(MPICC) $(CFLAGS) p2p_isend_bidir.c
 p2p_isend_ping.o  : $(SRCS) p2p_isend_ping.c;  $(MPICC) $(CFLAGS) p2p_isend_ping.c
 
 #Installation
+core-install:
+	mkdir -p $(INSTALL_DIR)
+	mv -v ./p2p_multitask$(BIN_SUFFIX) ./latency$(BIN_SUFFIX) $(INSTALL_DIR)
+
 install:
 	mkdir -p $(INSTALL_DIR)
 	mv -v ./latency$(BIN_SUFFIX) ./col_agtr$(BIN_SUFFIX) ./col_a2a$(BIN_SUFFIX) ./col_ardc$(BIN_SUFFIX) $(INSTALL_DIR)
 	mv -v ./col_bct$(BIN_SUFFIX) ./col_gtr$(BIN_SUFFIX) ./col_rdc$(BIN_SUFFIX) ./col_sct$(BIN_SUFFIX) $(INSTALL_DIR)
 	mv -v ./col_acc$(BIN_SUFFIX) ./col_acc_fence$(BIN_SUFFIX) ./p2p_get_fence$(BIN_SUFFIX) ./p2p_put_fence$(BIN_SUFFIX) $(INSTALL_DIR)
 	mv -v ./p2p_get$(BIN_SUFFIX) ./p2p_isend$(BIN_SUFFIX) ./p2p_put$(BIN_SUFFIX) ./p2p_send$(BIN_SUFFIX) $(INSTALL_DIR)
-	mv -v ./p2p_isend_bidir$(BIN_SUFFIX) ./p2p_isend_ping$(BIN_SUFFIX) $(INSTALL_DIR)
-	mv -v ./p2p_mrate$(BIN_SUFFIX) ./p2p_mrate_bidir$(BIN_SUFFIX) ./col_init$(BIN_SUFFIX) ./col_init_th$(BIN_SUFFIX) $(INSTALL_DIR)
+	mv -v ./p2p_isend_bidir$(BIN_SUFFIX) ./p2p_isend_ping$(BIN_SUFFIX) ./p2p_multitask$(BIN_SUFFIX) $(INSTALL_DIR)
+	mv -v ./p2p_mrate$(BIN_SUFFIX) ./p2p_mrate_bidir$(BIN_SUFFIX) ./p2p_multitask$(BIN_SUFFIX) $(INSTALL_DIR)
+	mv -v ./col_init$(BIN_SUFFIX) ./col_init_th$(BIN_SUFFIX) $(INSTALL_DIR)
 
 # Clean
 clean:
 	rm -f ./*.o
+
+clean-core:
+	rm -f ./*.o
+	rm -f ./p2p_multitask$(BIN_SUFFIX) ./latency$(BIN_SUFFIX)
 
 clean-all:
 	rm -f ./*.o
@@ -101,8 +113,9 @@ clean-all:
 	rm -f ./col_bct$(BIN_SUFFIX) ./col_gtr$(BIN_SUFFIX) ./col_rdc$(BIN_SUFFIX) ./col_sct$(BIN_SUFFIX)
 	rm -f ./col_acc$(BIN_SUFFIX) ./col_acc_fence$(BIN_SUFFIX) ./p2p_get_fence$(BIN_SUFFIX) ./p2p_put_fence$(BIN_SUFFIX)
 	rm -f ./p2p_get$(BIN_SUFFIX) ./p2p_isend$(BIN_SUFFIX) ./p2p_put$(BIN_SUFFIX) ./p2p_send$(BIN_SUFFIX)
-	rm -f ./p2p_isend_bidir$(BIN_SUFFIX) ./p2p_isend_ping$(BIN_SUFFIX)
-	rm -f ./p2p_mrate$(BIN_SUFFIX) ./p2p_mrate_bidir$(BIN_SUFFIX) ./col_init$(BIN_SUFFIX) ./col_init_th$(BIN_SUFFIX)
+	rm -f ./p2p_isend_bidir$(BIN_SUFFIX) ./p2p_isend_ping$(BIN_SUFFIX) ./p2p_multitask$(BIN_SUFFIX)
+	rm -f ./p2p_mrate$(BIN_SUFFIX) ./p2p_mrate_bidir$(BIN_SUFFIX) ./p2p_multitask$(BIN_SUFFIX)
+	rm -f ./col_init$(BIN_SUFFIX) ./col_init_th$(BIN_SUFFIX)
 
 
 

@@ -1,6 +1,6 @@
 /*==============================================================================
  * Program  : col_init
- * Revision : 1.3 (2016-05-17)
+ * Revision : 1.6 (2016-09-16)
  * Author   : Carlos Rosales Fernandez [carlos.rosales.fernandez(at)gmail.com]
  *==============================================================================
  * Copyright 2016 Carlos Rosales Fernandez and The University of Texas at Austin

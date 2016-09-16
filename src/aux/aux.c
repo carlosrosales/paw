@@ -50,11 +50,9 @@ double benchTimer(void)
 // This value is then used to determine the minimum outer loop length
 int timerTest( double *overhead, double *threshold_lo, double *threshold_hi )
 {
-    int     i;
-    double  tstart, tend, tmax, tdelta, resolution;
-
+    int    i;
+    double tstart, tend, tmax, tdelta, resolution;
     struct timespec res;
-
 
     tstart = benchTimer();
     for( i = 0; i < TIMER_REPS; i++){

@@ -1,6 +1,6 @@
 /*==============================================================================
  * Program  : latency
- * Revision : 1.4 (2015-10-13)
+ * Revision : 1.6 (2016-09-16)
  * Author   : Carlos Rosales Fernandez [carlos.rosales.fernandez(at)gmail.com]
  *==============================================================================
  * Copyright 2014 Carlos Rosales Fernandez and The University of Texas at Austin

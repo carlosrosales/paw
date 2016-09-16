@@ -1,6 +1,6 @@
 /*==============================================================================
  * Program  : col_allgather
- * Revision : 1.5 (2015-10-14)
+ * Revision : 1.6 (2016-09-16)
  * Author   : Carlos Rosales Fernandez [carlos.rosales.fernandez(at)gmail.com]
  *==============================================================================
  * Copyright 2014 Carlos Rosales Fernandez and The University of Texas at Austin
@@ -38,7 +38,7 @@ int main(int argc, char **argv)
     int    dblSize, proc, nprocs, nodeCPUs, nodes;
     unsigned int i, j, size, localSize, NLOOP = NLOOP_MAX;
     unsigned int smin = MIN_COL_SIZE, smed = MED_COL_SIZE, smax = MAX_COL_SIZE;
-    double tScale = USEC, bwScale = MB;
+    double tScale = USEC, bwScale = MB_8;
     double overhead, threshold_lo, threshold_hi, tStart, timeMin, timeMinGlobal;
     double sizeBytes, msgBytes, UsedMem, localMax;
     double tElapsed[NREPS], tElapsedGlobal[NREPS];
