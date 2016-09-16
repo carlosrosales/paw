@@ -40,7 +40,7 @@ int main(int argc, char **argv)
     char   testName[32] = "MPI_Multitask", file1[64], file2[64];
     int    dblSize, proc, nprocs, npairs, partner, tag = 0;
     unsigned int i, j, size, localSize, NLOOP = NLOOP_MIN;
-    unsigned int smed = MED_P2P_SIZE, smax = MAX_P2P_SIZE;
+    unsigned int smin = MIN_P2P_SIZE, smed = MED_P2P_SIZE, smax = MAX_P2P_SIZE;
     double tScale = USEC, bwScale = MB_8;
     double tStart, timeMin, timeMinGlobal, overhead, threshold_lo, threshold_hi;
     double msgBytes, sizeBytes, localMax, UsedMem;
