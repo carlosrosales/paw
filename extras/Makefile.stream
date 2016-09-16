@@ -1,0 +1,40 @@
+# Makefile for PAW BLAS tests
+# v1.6 (2016-09-16) Carlos Rosales-Fernandez
+#------------------------------------------------------------------------------
+# Copyright 2016 Carlos Rosales Fernandez and The University of Texas at Austin
+#
+# This file is part of the Performance Assessment Workbench (PAW).
+# PAW is free software: you can redistribute it and/or modify it under the
+# terms of the GNU GPL version 2 or (at your option) any later version.
+#
+# PAW is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+# A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# PAW, in the file COPYING.txt. If not, see <http://www.gnu.org/licenses/>.
+#------------------------------------------------------------------------------
+#
+#  Basic definitions
+SHELL  = /bin/sh
+
+CFLAGS += $(OMP_FLAGS)
+CFLAGS += $(ARCH_FLAGS)
+
+LFLAGS += $(OMP_FLAGS)
+LFLAGS += $(ARCH_FLAGS)
+
+# Build
+core:
+	tar xzvf stream-5.10.tar.gz
+	cd stream-5.10; $(CC) $(LFLAGS) stream.c -o stream$(BIN_SUFFIX)
+
+# Installation
+core-install:
+	mkdir -p $(INSTALL_DIR)
+	cd ./stream-5.10; mv -v ./stream$(BIN_SUFFIX) $(INSTALL_DIR)
+
+# Clean
+clean:
+	rm -f ./*.o
+

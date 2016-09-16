@@ -47,7 +47,7 @@ gpu:  logs gpu-build check-build
 phi:  logs phi-build check-build
 
 install:      blas-raw-install mpi-raw-install check-install
-core-install: blase-core-install mpi-core-install stream-core-install check-install
+core-install: blas-core-install mpi-core-install stream-core-install check-install
 all-install:  blas-raw-install mpi-raw-install gpu-raw-install phi-raw-install check-install
 blas-install: blas-raw-install check-install
 mpi-install:  mpi-raw-install check-install
@@ -125,7 +125,7 @@ mpi-core-build:
 mpi-core-install:
 # Core MPI Test Install
 	@echo "Installing core MPI test executables..."      |  tee -a $(INSTALL_LOG)
-	@$(MAKE) --directory=`pwd`/src/mpi base-install 2>&1 | tee -a $(INSTALL_LOG)
+	@$(MAKE) --directory=`pwd`/src/mpi core-install 2>&1 | tee -a $(INSTALL_LOG)
 	@echo                                                |  tee -a $(INSTALL_LOG)
 
 mpi3-build:
@@ -165,17 +165,14 @@ phi-raw-install:
 	@echo                                                    |  tee -a $(INSTALL_LOG)
 
 stream-core-build:
-	@echo "Generating core STREAM test..."                          |  tee -a $(BUILD_LOG)
-	@cd extras                                                 2>&1 | tee -a $(BUILD_LOG)
-	@tar xzvf ./stream-5.10.tar.gz                             2>&1 | tee -a $(BUILD_LOG)
-	@cd ./stream-5.10                                          2>&1 | tee -a $(BUILD_LOG)
-	@$(CC) -O2 $(OMP_FLAGS) $(ARCH_FLAGS) ./stream.c -o stream 2>&1 | tee -a $(BUILD_LOG)
-	@echo                                                           |  tee -a $(BUILD_LOG)
+	@echo "Generating core STREAM test..."                           |  tee -a $(BUILD_LOG)
+	@$(MAKE) --directory=`pwd`/extras -f Makefile.stream core   2>&1 | tee -a $(BUILD_LOG)
+	@echo                                                            |  tee -a $(BUILD_LOG)
 
 stream-core-install:
-	@echo "Installing core STREAM test executable..."      |  tee -a $(INSTALL_LOG)
-	@mv -v ./extras/stream-5.10/stream $(INSTALL_DIR) 2>&1 |  tee -a $(INSTALL_LOG)
-	@echo                                                  |  tee -a $(INSTALL_LOG)
+	@echo "Installing core STREAM test executable..."                        |  tee -a $(INSTALL_LOG)
+	@$(MAKE) --directory=`pwd`/extras -f Makefile.stream core-install   2>&1 |  tee -a $(INSTALL_LOG)
+	@echo                                                                    |  tee -a $(INSTALL_LOG)
 
 clean:
 # Cleanup all directories
