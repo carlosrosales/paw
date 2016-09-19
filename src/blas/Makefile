@@ -38,7 +38,7 @@ core: blas_dgemm_single
 all: blas_dgemm_single blas_dgemm blas_sgemm blas_dgemv blas_sgemv
 
 # Linking Stage
-blas_dgemm_single : $(OBJ_DGEMM); $(CC) $(OBJ_DGEMM) $(LFLAGS) -o blas_dgemm_single$(BIN_SUFFIX)
+blas_dgemm_single : $(OBJ_DGEMMS); $(CC) $(OBJ_DGEMMS) $(LFLAGS) -o blas_dgemm_single$(BIN_SUFFIX)
 blas_dgemm  : $(OBJ_DGEMM); $(CC) $(OBJ_DGEMM) $(LFLAGS) -o blas_dgemm$(BIN_SUFFIX)
 blas_dgemv  : $(OBJ_DGEMV); $(CC) $(OBJ_DGEMV) $(LFLAGS) -o blas_dgemv$(BIN_SUFFIX)
 blas_sgemm  : $(OBJ_SGEMM); $(CC) $(OBJ_SGEMM) $(LFLAGS) -o blas_sgemm$(BIN_SUFFIX)
