@@ -32,7 +32,7 @@ export MPICC=mpicc
 export CFLAGS=-c -O3
 export LFLAGS=   -O3 -lrt
 export ARCH_FLAGS=-xHOST
-export OMP_FLAGS=-openmp
+export OMP_FLAGS=-qopenmp
 
 # GNU gfortran
 #-------------
