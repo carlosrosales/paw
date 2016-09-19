@@ -40,7 +40,7 @@
 \fancyhf{}
 \lhead{C. Rosales}
 \rhead{Performance Assessment Workbench User Guide}
-\lfoot{PAW USer Guide}
+\lfoot{PAW User Guide}
 \rfoot{\thepage}
 }
 
@@ -73,7 +73,7 @@
 \verb+ +
 \vspace{1em}
 \begin{flushright}
-\huge\bf PAW v1.5.1\\
+\huge\bf PAW v1.6\\
 \rule{\textwidth}{4pt}
 \large{\bf Performance Assessment Workbench User Guide\\
 Document Revision 1.0\\
@@ -97,13 +97,14 @@ Copyright 2016 Carlos Rosales Fern\'andez and the University of Texas at Austin.
 \end{titlepage}
 
 \begin{abstract}
-The Performance Assessment Workbench (PAW) is an Open Source suite of microbenchmarks designed with simplicity and reliability in mind. This User Guide documents the implementation details and the general usage for all components of PAW. As of version 1.5 the suite contains code designed to test:
+The Performance Assessment Workbench (PAW) is an Open Source suite of microbenchmarks designed with simplicity and reliability in mind. This User Guide documents the implementation details and the general usage for all components of PAW. As of version 1.6 the suite contains code designed to test:
 
 \begin{itemize}
 \item BLAS floating point performance in CPUs, GPUs and Xeon Phi
 \item MPI latency and bandwidth, including point to point and collective calls
 \item Data transfer rates between CPU and GPU
-\item Data transfer rates between CPU and Xeon Phi coprocessor. 
+\item Data transfer rates between CPU and Xeon Phi coprocessor
+\item Memory bandwidth, IO rates, OMP overhead (extras)
 \end{itemize}
 
 Each of these capabilities is supported by multiple individual codes. Our objective is that each test provided be completely independent of other tests in the suite, so that it can be executed independently of others and its implementation can be reviewed cleanly and without interference.
@@ -116,7 +117,7 @@ Throughout the text we have used text boxes to highlight important information. 
 
 Our intention is to create a set of simple benchmark implementations that are transparent to use and understand. The hope is that users of this set of tools will actually look at the code implementation and understand exactly what is being measured, without having to peel off multiple layers of obfuscating code. We have made an effort to write simple, reliable, and thoroughly commented C code, but we are well aware that documentation is never perfect or complete. We welcome all feedback. Feedback that includes suggestions for improvement in the usability, reliability, and accuracy of these benchmarks is particularly welcome. 
 
-Version 1.5.1 is a minor update which adds the ability to measure MPI startup times and fixes a bug in the resizing of BLAS tests via environmental variables.
+Version 1.6 is a minor update which adds the ability to build a small set of \textit{core} benchmarks, including an MPI latency test, a multitask MPI bandwidth thest for point-to-point communications, the memory bandwidth using STREAM, and the floating point performance using DGEMM.
 \end{abstract}
 
 \tableofcontents
@@ -144,6 +145,7 @@ A set of benchmarks for CPU only will be generated using the traditional \texttt
 You may also choose to build only a subset of test codes:
 
 \begin{verbatim}
+    make core && make core-install
     make blas && make blas-install
     make mpi  && make mpi-install
     make mpi3 && make mpi3-install
@@ -159,6 +161,37 @@ The executable tests will be placed in the \verb+/bin+ directory unless a \verb+
     make blas && make blas-install PREFIX=/home/me/paw
     make mpi  && make mpi-install PREFIX=/home/me/paw
 \end{verbatim}
+
+\FloatBarrier
+\chapter{Core Tests}
+A small set of core streamlined core tests have been selected. These tests are not intended to provide highly detailed results but rather to act as sanity checks and tests for maximum performance on a system. The core tests are a single size DGEMM, a latency and bandwidth test for MPI, and the STREAM benchmark. Each of these tests is executed for a single payload size and a minimum number of inner loop iterations to ensure they can be run quickly. Together they will present a fairly good overview of a system maximum performance.
+
+\section*{blas\_dgemm\_single}
+This is a multithreaded single matrix size DGEMM test. Control the number of threads with the \verb+OMP_NUM_THREADS+ environmental variable, and the linear size of the matrix with the variable \verb+MAX_BLAS_SIZE+ (integer number of elements, NOT a size in bytes). This test should provide yo with a good indication of the achievable peak floating point performance in your system. For further implementation details read Section \ref{sec:blas}.
+
+\section*{latency}
+This is an MPI point-to-point latency test. By pinning tasks appropriately one can measure same socket, socket-to socket and node-to-node latencies for the MPI stack. For implementation details read Section \ref{sec:latency}.
+
+\section*{p2p\_multitask} 
+This is an MPI point-to-point bandwidth test implemented using isend/irecv/wait calls with a single message size that can be controlled with the environmental variable \verb+MAX_P2P_SIZE+. Some processors have cores which are not powerful enough to saturate MPI bandwidth for large messages when using a single MPI task per node. This test allows to measure unidirectional bandwidth with an arbitrary number of tasks. The recommended use is to start with two nodes and one MPI task per node, and see if increasing the number of tasks per node increases the achieved bandwidth.
+
+\section*{stream}
+The STREAM benchmark, created by John McCalpin, is the industry standard for measuring sustained memory bandwidth. It consists of four tests, described in Table \ref{tab:stream}.
+
+\begin{table}[h!]
+\centering
+\caption{STREAM benchmark operation definitions}
+\label{tab:stream}
+\begin{tabular}{|l|l|}
+\hline
+Copy  & c[i] = a[i]\\\hline
+Scale & b[i] = scalar*c[i]\\\hline
+Add   & c[i] = a[i]+b[i]\\\hline
+Triad & a[i] = b[i]+scalar*c[i]\\\hline
+\end{tabular}
+\end{table}
+
+Each test should be executed for an array size that is larger than four times the available cache size to avoid local caching issues. For more details on the STREAM benchmark see reference \cite{stream}.
 
 \FloatBarrier
 \chapter{General Design}
@@ -231,6 +264,8 @@ The tests described in this section are limited to single node executions, since
 
 The code executes each BLAS call within a loop for each matrix size, and the average time is recorded. This loop is repeated \verb+NREPS+ times and the minimum, maximum, and mean values are written to file. The number of iterations in the innermost loop, \verb+NLOOP+, is set dynamically. The code ensures the minimum number of inner loop repetitions is sufficient to obtain an accurate timing for the smallest matrix size. This is done by determining the minimum time that must pass between consecutive timer calls for the measurement to be valid, multiplying this by 10, and using that as the minimum acceptable time that the innermost loop should take. As the size of the problem increases the innermost loop iteration number is decreased to avoid excessive runtime, but it is always kept over the safety threshold or over \verb+NLOOP_MIN+, whichever is most conservative. A warmup execution is run without being timed before each message size is tested.
 
+The only exception to this setup is the \verb+blas_dgemm_single+ test, which is designed to run a teh DGEMM test for a single matrix of size equal to \verb+MAX_BLAS_SIZE+. This is still run \verb+NREP+ times.
+
 The setup costs - memory allocation, array initialization, etc - are not considered as part of the timed region. The number of operations required for the matrix matrix multiplication is estimated as $2N^2(N+1)$ for each size $N$, and the number of operations required for the matrix vector multiplication is estimated as $2N(N+1)$ for each size $N$. 
 
 Each test will output two files, \verb+XXXXX_time-np_YYYY.dat+ and \verb+XXXXX_flops-np_YYYY.dat+ with execution timings and floating point operations per second respectively, as well as a brief summary to \verb+stdout+. IN the names the pattern \verb+XXXXX+ corresponds to the blas call name (dgemm, sgemm, dgemv, sgemv) and the pattern \verb+YYYY+ to the number of threads used in the test. Make sure \verb+OMP_NUM_THREADS+ is set to the correct number when you execute these tests, as they rely on this number to write the correct file names.
@@ -301,6 +336,7 @@ PAW provides independent codes to measure the performance of the following MPI c
 \item{Specialized}
 \begin{itemize}
 	\item{MPI\_Isend in ping-ping configuration ( \texttt{p2p\_isend\_bidir} )}
+	\item{Unidirectional MPI bandwidth using multiple tasks per node ( \texttt{p2p\_multitask} )}
 	\item{MPI\_Isend using bi-directional communication ( \texttt{p2p\_isend\_ping} )}
 	\item{Unidirectional MPI message rate ( \texttt{p2p\_mrate} )}
 	\item{Bidirectional MPI message rate ( \texttt{p2p\_mrate\_bidir} )}
@@ -559,22 +595,26 @@ The \verb+p2p_isend_ping+ benchmark uses the \verb+MPI_Isend+, \verb+MPI_Irecv+,
 
 \begin{table}[ht]
 \centering
-\caption{Timed code in \texttt{p2p\_isend} test.}
+\caption{Timed code in \texttt{p2p\_isend\_ping} test.}
 \label{tab:ping}
 \begin{tabular}{|l|l|}
 \hline
 \bf{Tasks 0...(n/2-1)}	& \bf{Tasks n/2...(n-1)}\\\hline
 MPI\_Isend( ... );      & MPI\_Irecv( ... );\\
-MPI\_Wait( ... );       & MPI\_Wait( ... );\\
-MPI\_Irecv( ... );      & MPI\_Isend( ... );\\
 MPI\_Wait( ... );       & MPI\_Wait( ... );\\\hline
 \end{tabular}
 \end{table}
 
 The code writes a summary to \verb+stdout+, and timing and bandwidth results to files named \verb+isend_ping_time-np_XXXX.dat+ and \verb+isend_ping_bw-np_XXXX.dat+, where \verb+XXXX+ is the number of processors used in the test.
 
-\FloatBarrier
+\subsection{p2p\_multitask}
+The \verb+p2p_multitask+ benchmark uses the \verb+MPI_Isend+, \verb+MPI_Irecv+, and \verb+MPI_Wait+ calls. It is a specialized version of the \verb+p2p_multitask+ using a single size for the data exchange equal to \verb+MAX_P2P_SIZE+. Within the timed section of the code only the calls shown in Table \ref{tab:isend} are executed. 
 
+This test is provided because the typical ping-pong tests allow for multiple MPI task pair data transfer overlap, taking advantage of the bidirectional nature of most high performance interconnects. A ping-pong test of that type with multiple tasks per node will typically provide a bandwidth that is below the bidirectional limit and above the unidirectional limit. Such a measurement is imprecise and provides no effective information since the overlap is not controlled. 
+
+The code writes a summary to \verb+stdout+, and timing and bandwidth results to files named \verb+multitask_time-np_XXXX.dat+ and \verb+multitask_bw-np_XXXX.dat+, where \verb+XXXX+ is the number of processors used in the test.
+
+\FloatBarrier
 \subsection{p2p\_mrate}
 The \verb+p2p_mrate+ benchmark uses the \verb+MPI_Isend+, \verb+MPI_Irecv+, and \verb+MPI_Waitall+ calls. The communication happens in a pipelined ping-ping setup, with the first half of the tasks sending data to their partner tasks in the second half. A user given window size determines how many messages are pipelined one after another before performing a synchronization call, with the aim of determining the sustained message rate of the network. This number is defined in the file \verb+src/aux/constants.h+ as \verb+DEFAULT_WINDOW_SIZE+ but can be overwritten using the environmental variable \verb+WINDOW_SIZE+  Within the timed section of the code only the calls shown in Table \ref{tab:mrate} are executed, with WS standing for the window size value.
 
