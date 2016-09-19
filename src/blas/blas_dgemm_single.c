@@ -46,7 +46,7 @@ int main(int argc, char **argv)
     FILE   *fp, *fp2;
     char   testName[32] = "DGEMM", file1[64], file2[64];
     unsigned int i, j, size, localSize, nthreads;
-    unsigned int NLOOP = NLOOP_MIN;
+    unsigned int NLOOP = NLOOP_MIN, smin = MIN_BLAS_SIZE;
     unsigned int smed = MED_BLAS_SIZE, smax = MAX_BLAS_SIZE;
     double tScale = SEC, fpScale = GFLOP;
     double tStart, timeMin, overhead, threshold_lo, threshold_hi;
@@ -96,7 +96,7 @@ int main(int argc, char **argv)
     for(j = 0; j < NLOOP; j++){
          cblas_dgemm( CblasRowMajor, CblasNoTrans, CblasNoTrans, smax, 
                       smax, smax, alpha, A, smax, B, smax, 
-                      beta, C, smin );
+                      beta, C, smax );
     }
     timeMin = benchTimer() - tStart;
     resetInnerLoop( timeMin, threshold_lo, &NLOOP );
@@ -112,8 +112,8 @@ int main(int argc, char **argv)
             tStart = benchTimer();
             for(j = 0; j < NLOOP; j++){
                 cblas_dgemm( CblasRowMajor, CblasNoTrans, CblasNoTrans, 
-                             size, size, size, alpha, A, size, B, size, 
-                             beta, C, size );
+                             smax, smax, smax, alpha, A, smax, B, smax, 
+                             beta, C, smax );
             }
             tElapsed[i] = benchTimer() - tStart;
     }
@@ -121,9 +121,9 @@ int main(int argc, char **argv)
     // Get time and flops per DGEMM call
     // ops is total floating point operations per matrix matrix product
     // matSize is just the leading size of the matrices used
-    ops     = (double)size*(double)size*2.0E0*( (double)size + 1.0E0 );
-    matSize = (double)size;
-    post_process( fp, fp2, threshold_hi, tElapsed, tScale, fpScale, size,
+    ops     = (double)smax*(double)smax*2.0E0*( (double)smax + 1.0E0 );
+    matSize = (double)smax;
+    post_process( fp, fp2, threshold_hi, tElapsed, tScale, fpScale, smax,
                    matSize, ops, &NLOOP, &localMax, &localSize );
     }
     // Print completion message                 
