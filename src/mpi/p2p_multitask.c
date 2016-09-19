@@ -130,13 +130,13 @@ int main(int argc, char **argv)
         tStart = benchTimer();
         if( proc < npairs ){
             for(j = 0; j < NLOOP; j++){
-    	        MPI_Isend( A, size, MPI_DOUBLE, partner, tag, MPI_COMM_WORLD, &req1 );
+    	        MPI_Isend( A, smax, MPI_DOUBLE, partner, tag, MPI_COMM_WORLD, &req1 );
                 MPI_Wait( &req1, &stat1 );
             }
         }
         else{
             for(j = 0; j < NLOOP; j++){
-     	        MPI_Irecv( B, size, MPI_DOUBLE, partner, tag, MPI_COMM_WORLD, &req2 );
+     	        MPI_Irecv( B, smax, MPI_DOUBLE, partner, tag, MPI_COMM_WORLD, &req2 );
                 MPI_Wait( &req2, &stat2 );
             }
         }
@@ -147,13 +147,12 @@ int main(int argc, char **argv)
     if( proc == 0 ){
         // sizeBytes is size to write to file
         // msgBytes is actual data exchanged on the wire
-        msgBytes  = (double)size*(double)npairs*(double)dblSize;
-        sizeBytes = (double)size*(double)dblSize;
+        msgBytes  = (double)smax*(double)npairs*(double)dblSize;
+        sizeBytes = (double)smax*(double)dblSize;
         post_process( fp, fp2, threshold_hi, tElapsedGlobal, tScale, 
-                      bwScale, size*dblSize, sizeBytes, msgBytes, &NLOOP, 
+                      bwScale, smax*dblSize, sizeBytes, msgBytes, &NLOOP, 
                       &localMax, &localSize );
     }
-    MPI_Bcast( &NLOOP, 1, MPI_INT, 0, MPI_COMM_WORLD );
 
     //================================================================
     // Print completion message, free memory and exit                  
