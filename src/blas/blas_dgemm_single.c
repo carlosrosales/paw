@@ -125,7 +125,6 @@ int main(int argc, char **argv)
     matSize = (double)smax;
     post_process( fp, fp2, threshold_hi, tElapsed, tScale, fpScale, smax,
                    matSize, ops, &NLOOP, &localMax, &localSize );
-    }
     // Print completion message                 
     printSummary( fp2, testName, localMax, localSize );
     fclose( fp2 ); 
